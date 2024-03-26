@@ -34,6 +34,8 @@
 #     nutrition_plan_id = Column(Integer, ForeignKey("nutrition_plan.id"))
 #     nutrition_plan = relationship("NutritionPlan", back_populates="pet", uselist=False)
 
+
+MODEL_TEMPLATE = '''
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -44,6 +46,7 @@ class {{ CLASS_NAME }}(Base):
 
     __tablename__ = "TABLE_NAME"
 
-    # Pet Fields
+    # {{ CLASS_NAME }} Fields
     id = Column(Integer, primary_key=True, index=True)
     {{ COLUMNS }}
+'''

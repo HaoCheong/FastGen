@@ -1,6 +1,6 @@
 {
-	"tables": [
-		{ 
+	"tables": {
+		"Pet": { 
 			"name": "Pet",
 			"tablename": "pets",
 			"metadata": {
@@ -17,23 +17,33 @@
 					"column_type": "int"
 				}
 			]
-		}
-	],
-	"relationships": [
-		{
-			"table_1": "Pet",
-			"table_2": "Owner",
-			"type": "m2o"
 		},
-		{
-			"table_1": "Pet",
-			"table_2": "Trainer",
-			"type": "m2m"
-		},
-		{
-			"table_1": "Pet",
-			"table_2": "Nutrition",
-			"type": "o2o"
+        "Owner": { 
+			"name": "Owner",
+			"tablename": "owners",
+			"metadata": {
+				"name": "Owners",
+				"desc": "Operations with Pets Owners"
+			},
+			"columns": [
+				{ 
+					"column_name": "name",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "email",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "address",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "password",
+					"column_type": "str"
+				}
+			]
 		}
-	]
+    },
+	"relationships": []
 }
