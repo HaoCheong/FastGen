@@ -1,0 +1,107 @@
+{
+	"tables": [
+		{ 
+			"name": "Pet",
+			"tablename": "pets",
+			"metadata": {
+				"name": "Pets",
+				"desc": "Operations with Pets Owner"
+			},
+			"columns": [
+				{ 
+					"column_name": "name",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "age",
+					"column_type": "int"
+				}
+			]
+		},
+		{ 
+			"name": "Owner",
+			"tablename": "owners",
+			"metadata": {
+				"name": "Owners",
+				"desc": "Operations with Pets Owners"
+			},
+			"columns": [
+				{ 
+					"column_name": "name",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "email",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "address",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "password",
+					"column_type": "str"
+				}
+			]
+		},
+		{ 
+			"name": "Trainer",
+			"tablename": "trainers",
+			"metadata": {
+				"name": "Trainers",
+				"desc": "Operations with Pets Trainers"
+			},
+			"columns": [
+				{ 
+					"column_name": "name",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "trainer_id",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "desc",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "phone_no",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "email",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "date_joined",
+					"column_type": "str"
+				}
+			]
+		},
+		{ 
+			"name": "Nutrition",
+			"tablename": "nutrition_plan",
+			"metadata": {
+				"name": "Nutrition Plan",
+				"desc": "Operations with Pets Nutrition Plan"
+			},
+			"columns": [
+				{ 
+					"column_name": "name",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "desc",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "meal_plan",
+					"column_type": "str"
+				},{ 
+					"column_name": "date_added",
+					"column_type": "str"
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,21 @@
+
+# Owner id (Many-to-One)
+owner_id = Column(Integer, ForeignKey("pet_owner.id"))
+owner = relationship("Owner", back_populates="pets", uselist=False)
+
+{{ MANY_TABLE_NAME }}_id = Column(Integer, ForeignKey("{{ SELF_MANY_FKEY }}.id"))
+{{ MANY_TABLE_NAME }} = relationship("{{ MANY_TABLE_CLASS }}", back_populates="{{ SELF_POP_FIELD }}", uselist=False)
+
+# Trainer List (Many-to-Many with association object as link table)
+trainers = relationship(
+    "Trainer", secondary="pet_trainer_association", back_populates='pets')
+
+{{ MANY_TABLE_NAME }} = relationship(
+    "{{ MANY_TABLE_CLASS }}", secondary="{{ ASSOC_TABLE_NAME }}", back_populates='{{ SELF_POP_FIELD }}')
+
+# Nutrition Plan (One-To-One)
+nutrition_plan_id = Column(Integer, ForeignKey("nutrition_plan.id"))
+nutrition_plan = relationship("NutritionPlan", back_populates="pet", uselist=False)
+
+{{ ONE_TABLE_NAME }}_id = Column(Integer, ForeignKey("{{ ONE_TABLE_NAME }}.id"))
+{{ ONE_TABLE_NAME }} = relationship("{{ MANY_TABLE_CLASS }}", back_populates="{{ SELF_POP_FIELD }}", uselist=False)

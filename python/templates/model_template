@@ -7,8 +7,7 @@ from app.database import Base
 class {{ CLASS_NAME }}(Base):
 
     __tablename__ = "{{ TABLE_NAME }}"
-
-    # {{ CLASS_NAME }} Fields
+    
     id = Column(Integer, primary_key=True, index=True)
     {{ COLUMNS }}
 
