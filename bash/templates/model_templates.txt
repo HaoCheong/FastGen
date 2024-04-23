@@ -18,9 +18,11 @@ class {{ CLASS_NAME }}(Base):
 
 <<COLUMN_INTEGER>>
 {{ COLUMN_NAME }} = Column(Integer)
+{{ COLUMNS }}
 
 <<COLUMN_STRING>>
 {{ COLUMN_NAME }} = Column(String)
+{{ COLUMNS }}
 
 <<ASSOC_TABLE>>
 class {{ SELF_NAME }}{{ OTHER_NAME }}Association(Base):

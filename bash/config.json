@@ -16,8 +16,7 @@
 					"column_name": "age",
 					"column_type": "int"
 				}
-			],
-			"relationship":
+			]
 		},
 		{ 
 			"name": "Owner",
