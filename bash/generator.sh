@@ -25,7 +25,7 @@ function generate_base_files() {
     cp ./base/helper.temp ./project/app/helpers.py
 }
 
-# Generate the known files
+# Generate the known files and directories
 function generate_base_files() {
 
     echo "======== GENERATE BASE FILES ========"
@@ -43,7 +43,18 @@ function generate_base_files() {
     cp ./templates/base/helpers.temp ./project/app/helpers.py
 }
 
+# Clean the template from all the unused tags
+function clean_template() {
 
+    # Removes tags
+    sed -r -i -e "s/\{\{ [A-Z_]+ \}\}//g" $1
+
+    # Removes double new lines
+    # How the fuck does this work
+    sed -i -e ':a;N;$!ba;s/\n\n/\n/g' $1
+}
+
+# Generate necessary files from model
 function generate_models() {
     echo "======== GENERATE MODELS FILES ========"
 
@@ -58,7 +69,10 @@ function generate_models() {
         model_template=$(cat ./templates/model_templates.txt | grep -e "<<MODEL_BASE>>" -A16 | tail -15)
         echo "$model_template" > ./project/app/models/"$model_lc"_model.py
 
-
+        # Add the one offs replacements
+        sed -r -i "s/\{\{ CLASS_NAME \}\}/$model/g" $file_name
+        sed -r -i "s/\{\{ TABLE_NAME \}\}/$model_lc/g" $file_name
+        # Add the table name
 
         # Create get all the column
         model_cols=$(jq -r ' .tables[] | select(.name == "'$model'") | .columns[] | [.column_name, .column_type] | join(",") ' config.json)
@@ -71,33 +85,32 @@ function generate_models() {
 
             if [[ $model_col_type == 'str' ]]
             then
+                # Add new string column in model
                 model_column_str=$(cat ./templates/model_templates.txt | grep -e "<<COLUMN_STRING>>" -A2 | tail -2)
                 filled_model_column_str=$(echo "$model_column_str" | sed -r "s/\{\{ COLUMN_NAME \}\}/$model_col_name/g")
                 filled_model_column_str=$(echo "$filled_model_column_str" | sed 's/\\n/\\\\n/g')
-
                 awk -v var="$filled_model_column_str" '{gsub(/{{ COLUMNS }}/, var); print}' $file_name > temp.txt
                 cat temp.txt > $file_name
                 
             elif [[ $model_col_type == 'int' ]]
             then
-
+                # Add new integer column in model
                 model_column_int=$(cat ./templates/model_templates.txt | grep -e "<<COLUMN_INTEGER>>" -A2 | tail -2)
                 filled_model_column_int=$(echo "$model_column_int" | sed -r "s/\{\{ COLUMN_NAME \}\}/$model_col_name/g")
                 filled_model_column_int=$(echo "$filled_model_column_int" | sed -r 's/\\n/\\\\n/g')
-
                 awk -v var="$filled_model_column_int" '{gsub(/{{ COLUMNS }}/, var); print}' $file_name > temp.txt
                 cat temp.txt > $file_name
             fi
         done
+
+        clean_template $file_name
     done
 
 }
-# Start with model
 
-# Generate
 
 # ========== Main ========== 
-# ERASE
+# ERASE test project
 if [[ "$1" == "erase" ]]; then
     rimraf ./project
     exit
@@ -107,3 +120,5 @@ fi
 generate_base_directories
 generate_base_files
 generate_models
+
+
