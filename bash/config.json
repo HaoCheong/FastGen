@@ -103,5 +103,22 @@
 				}
 			]
 		}
+	],
+	"relationships": [
+		{
+			"table_1": "Pet",
+			"table_2": "Owner",
+			"type": "m2o"
+		},
+		{
+			"table_1": "Pet",
+			"table_2": "Trainer",
+			"type": "m2m"
+		},
+		{
+			"table_1": "Pet",
+			"table_2": "Nutrition",
+			"type": "o2o"
+		}
 	]
 }
