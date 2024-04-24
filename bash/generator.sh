@@ -52,6 +52,7 @@ function generate_models() {
     do
         echo "> Generating model for $model"
         model_lc=$(echo "$model" | tr '[:upper:]' '[:lower:]')
+        file_name=./project/app/models/"$model_lc"_model.py
 
         # Create default template
         model_template=$(cat ./templates/model_templates.txt | grep -e "<<MODEL_BASE>>" -A16 | tail -15)
@@ -68,27 +69,24 @@ function generate_models() {
             model_col_name=$(echo $cols | cut -d"," -f1)
             model_col_type=$(echo $cols | cut -d"," -f2)
 
-            echo $model_col_name
-            echo $model_col_type
-
             if [[ $model_col_type == 'str' ]]
             then
                 model_column_str=$(cat ./templates/model_templates.txt | grep -e "<<COLUMN_STRING>>" -A2 | tail -2)
                 filled_model_column_str=$(echo "$model_column_str" | sed -r "s/\{\{ COLUMN_NAME \}\}/$model_col_name/g")
-                
-                echo "$filled_model_column_str"
+                filled_model_column_str=$(echo "$filled_model_column_str" | sed 's/\\n/\\\\n/g')
 
-                # new_file=$(cat ./project/app/models/"$model_lc"_model.py | sed -r "s/\{\{ COLUMNS \}\}/$filled_model_column_str/g")
-                cat ./project/app/models/"$model_lc"_model.py | sed -r "s/COLUMNS/$filled_model_column_str/g" 
+                awk -v var="$filled_model_column_str" '{gsub(/{{ COLUMNS }}/, var); print}' $file_name > temp.txt
+                cat temp.txt > $file_name
                 
             elif [[ $model_col_type == 'int' ]]
             then
+
                 model_column_int=$(cat ./templates/model_templates.txt | grep -e "<<COLUMN_INTEGER>>" -A2 | tail -2)
                 filled_model_column_int=$(echo "$model_column_int" | sed -r "s/\{\{ COLUMN_NAME \}\}/$model_col_name/g")
-                echo "$filled_model_column_int"
+                filled_model_column_int=$(echo "$filled_model_column_int" | sed -r 's/\\n/\\\\n/g')
 
-                
-                # echo $new_file > ./project/app/models/"$model_lc"_model.py
+                awk -v var="$filled_model_column_int" '{gsub(/{{ COLUMNS }}/, var); print}' $file_name > temp.txt
+                cat temp.txt > $file_name
             fi
         done
     done
