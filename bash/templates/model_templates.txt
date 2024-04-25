@@ -48,15 +48,15 @@ class {{ SELF_CLASS }}{{ OTHER_CLASS }}Association(Base):
 
 
 <<REL_MANY_TO_ONE>>
-{{ MANY_TABLE_NAME }}_id = Column(Integer, ForeignKey("{{ SELF_POP_FIELD }}_{{ MANY_TABLE_NAME }}.id"))
-    {{ MANY_TABLE_NAME }} = relationship("{{ MANY_TABLE_CLASS }}", back_populates="{{ SELF_POP_FIELD }}s", uselist=False)
+{{ MANY_TABLE_NAME }}_id = Column(Integer, ForeignKey("{{ SELF_TABLE_NAME }}_{{ MANY_TABLE_NAME }}.id"))
+    {{ MANY_TABLE_NAME }} = relationship("{{ MANY_TABLE_CLASS }}", back_populates="{{ SELF_TABLE_NAME }}s", uselist=False)
     
     {{ RELATION }}
 
 
 <<REL_MANY_TO_MANY>>
 {{ MANY_TABLE_NAME }} = relationship(
-        "{{ MANY_TABLE_CLASS }}", secondary="{{ ASSOC_TABLE_NAME }}", back_populates='{{ SELF_POP_FIELD }}s')
+        "{{ MANY_TABLE_CLASS }}", secondary="{{ ASSOC_TABLE_NAME }}", back_populates='{{ SELF_TABLE_NAME }}s')
 
 
     {{ RELATION }}
@@ -64,9 +64,22 @@ class {{ SELF_CLASS }}{{ OTHER_CLASS }}Association(Base):
 
 <<REL_ONE_TO_ONE>>
 {{ ONE_TABLE_NAME }}_id = Column(Integer, ForeignKey("{{ ONE_TABLE_NAME }}.id"))
-    {{ ONE_TABLE_NAME }} = relationship("{{ ONE_TABLE_CLASS }}", back_populates="{{ SELF_POP_FIELD }}", uselist=False)
+    {{ ONE_TABLE_NAME }} = relationship("{{ ONE_TABLE_CLASS }}", back_populates="{{ SELF_TABLE_NAME }}", uselist=False)
 
     {{ RELATION }}
 
 
----
+<<LINK_REL_MANY_TO_ONE>>
+{{ OTHER_TABLE_NAME }}s = relationship("{{ OTHER_TABLE_CLASS }}", back_populates="{{ SELF_TABLE_NAME }}")
+    
+    {{ RELATION }}
+
+<<LINK_REL_MANY_TO_MANY>>
+{{ OTHER_TABLE_NAME }}s = relationship("{{ OTHER_TABLE_CLASS }}", secondary="{{ OTHER_TABLE_NAME }}_{{ SELF_TABLE_NAME }}_association", back_populates='{{ SELF_TABLE_NAME }}s')
+
+    {{ RELATION }}
+
+<<LINK_REL_ONE_TO_ONE>>
+{{ OTHER_TABLE_NAME }} = relationship("{{ OTHER_TABLE_CLASS }}", back_populates="{{ SELF_TABLE_NAME }}", uselist=False)
+
+    {{ RELATION }}
