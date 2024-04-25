@@ -74,7 +74,7 @@
 				},
 				{ 
 					"column_name": "date_joined",
-					"column_type": "str"
+					"column_type": "datetime"
 				}
 			]
 		},
@@ -96,10 +96,10 @@
 				},
 				{ 
 					"column_name": "meal_plan",
-					"column_type": "str"
+					"column_type": "json"
 				},{ 
 					"column_name": "date_added",
-					"column_type": "str"
+					"column_type": "datetime"
 				}
 			]
 		}

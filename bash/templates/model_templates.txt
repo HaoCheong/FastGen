@@ -1,6 +1,6 @@
 
 <<MODEL_BASE>>
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, Integer, String, JSON, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -25,6 +25,16 @@ class {{ CLASS_NAME }}(Base):
 
 <<COLUMN_STRING>>
 {{ COLUMN_NAME }} = Column(String)
+    {{ COLUMNS }}
+
+
+<<COLUMN_JSON>>
+{{ COLUMN_NAME }} = Column(JSON)
+    {{ COLUMNS }}
+
+
+<<COLUMN_DATETIME>>
+{{ COLUMN_NAME }} = Column(DateTime)
     {{ COLUMNS }}
 
 

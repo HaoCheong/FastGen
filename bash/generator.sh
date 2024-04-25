@@ -99,6 +99,24 @@ function generate_models() {
                 filled_model_column_int=$(echo "$filled_model_column_int" | sed -r 's/\\n/\\\\n/g')
                 awk -v var="$filled_model_column_int" '{gsub(/{{ COLUMNS }}/, var); print}' $file_name > temp.txt
                 cat temp.txt > $file_name
+
+            elif [[ $model_col_type == 'json' ]]
+            then
+                # Add new json column in model
+                model_column_json=$(cat ./templates/model_templates.txt | grep -e "<<COLUMN_JSON>>" -A2 | tail -2)
+                filled_model_column_json=$(echo "$model_column_json" | sed -r "s/\{\{ COLUMN_NAME \}\}/$model_col_name/g")
+                filled_model_column_json=$(echo "$filled_model_column_json" | sed -r 's/\\n/\\\\n/g')
+                awk -v var="$filled_model_column_json" '{gsub(/{{ COLUMNS }}/, var); print}' $file_name > temp.txt
+                cat temp.txt > $file_name
+
+            elif [[ $model_col_type == 'datetime' ]]
+            then
+                # Add new datetime column in model
+                model_column_datetime=$(cat ./templates/model_templates.txt | grep -e "<<COLUMN_DATETIME>>" -A2 | tail -2)
+                filled_model_column_datetime=$(echo "$model_column_datetime" | sed -r "s/\{\{ COLUMN_NAME \}\}/$model_col_name/g")
+                filled_model_column_datetime=$(echo "$filled_model_column_datetime" | sed -r 's/\\n/\\\\n/g')
+                awk -v var="$filled_model_column_datetime" '{gsub(/{{ COLUMNS }}/, var); print}' $file_name > temp.txt
+                cat temp.txt > $file_name 
             fi
         done
 
