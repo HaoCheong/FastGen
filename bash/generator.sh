@@ -66,7 +66,7 @@ function generate_models() {
         file_name=./project/app/models/"$model_lc"_model.py
 
         # Create default template
-        model_template=$(cat ./templates/model_templates.txt | grep -e "<<MODEL_BASE>>" -A16 | tail -15)
+        model_template=$(cat ./templates/model_templates.txt | grep -e "<<MODEL_BASE>>" -A16 | tail -16)
         echo "$model_template" > ./project/app/models/"$model_lc"_model.py
 
         # Add the one offs replacements
@@ -107,9 +107,61 @@ function generate_models() {
         for relation in $curr_model_relations
         do
             to_table=$(echo $relation | cut -d"," -f2)
+            to_table_lc=$(echo "$to_table" | tr '[:upper:]' '[:lower:]')
             table_rel=$(echo $relation | cut -d"," -f3)
 
-            echo PASS 1 $to_table $table_rel
+            if [[ $table_rel == 'm2m' ]]
+            then
+                assoc_table_class="$model""$to_table"Association
+                assoc_table_name_lc="$model_lc"_"$to_table_lc"_association
+
+                # Generate the self class m2m relation
+                model_m2m_rel=$(cat ./templates/model_templates.txt | grep -e "<<REL_MANY_TO_MANY>>" -A5 | tail -5)
+                filled_model_m2m_rel=$(echo "$model_m2m_rel" | sed -r "s/\{\{ MANY_TABLE_NAME \}\}/$to_table_lc/g")
+                filled_model_m2m_rel=$(echo "$filled_model_m2m_rel" | sed -r "s/\{\{ MANY_TABLE_CLASS \}\}/$model/g")
+                filled_model_m2m_rel=$(echo "$filled_model_m2m_rel" | sed -r "s/\{\{ ASSOC_TABLE_NAME \}\}/$assoc_table_name_lc/g")
+                filled_model_m2m_rel=$(echo "$filled_model_m2m_rel" | sed -r "s/\{\{ SELF_POP_FIELD \}\}/$model_lc/g")
+                filled_model_m2m_rel=$(echo "$filled_model_m2m_rel" | sed 's/\\n/\\\\n/g')
+                awk -v var="$filled_model_m2m_rel\n" '{gsub(/{{ RELATION }}/, var); print}' $file_name > temp.txt
+                cat temp.txt > $file_name
+
+                # Generate association table
+                assoc_table=$(cat ./templates/model_templates.txt | grep -e "<<ASSOC_TABLE>>" -A7 | tail -7)
+                filled_assoc_table=$(echo "$assoc_table" | sed -r "s/\{\{ SELF_CLASS \}\}/$model/g")
+                filled_assoc_table=$(echo "$filled_assoc_table" | sed -r "s/\{\{ OTHER_CLASS \}\}/$to_table/g")
+                filled_assoc_table=$(echo "$filled_assoc_table" | sed -r "s/\{\{ SELF_TABLE_NAME \}\}/$model_lc/g")
+                filled_assoc_table=$(echo "$filled_assoc_table" | sed -r "s/\{\{ OTHER_TABLE_NAME \}\}/$to_table_lc/g")
+                filled_assoc_table=$(echo "$filled_assoc_table" | sed 's/\\n/\\\\n/g')
+                awk -v var="$filled_assoc_table\n" '{gsub(/{{ ASSOCIATION_OBJECT }}/, var); print}' $file_name > temp.txt
+                cat temp.txt > $file_name
+
+            elif [[ $table_rel == 'm2o' ]]
+            then
+
+                # Generate the self class m2o relation
+                model_m2o_rel=$(cat ./templates/model_templates.txt | grep -e "<<REL_MANY_TO_ONE>>" -A5 | tail -5)
+                filled_model_m2o_rel=$(echo "$model_m2o_rel" | sed -r "s/\{\{ MANY_TABLE_NAME \}\}/$to_table_lc/g")
+                filled_model_m2o_rel=$(echo "$filled_model_m2o_rel" | sed -r "s/\{\{ SELF_POP_FIELD \}\}/$model_lc/g")
+                filled_model_m2o_rel=$(echo "$filled_model_m2o_rel" | sed -r "s/\{\{ MANY_TABLE_CLASS \}\}/$to_table/g")
+                filled_model_m2o_rel=$(echo "$filled_model_m2o_rel" | sed 's/\\n/\\\\n/g')
+                awk -v var="$filled_model_m2o_rel\n" '{gsub(/{{ RELATION }}/, var); print}' $file_name > temp.txt
+                cat temp.txt > $file_name
+
+            elif [[ $table_rel == 'o2o' ]]
+            then
+
+                # Generate the self class o2o relation
+                model_o2o_rel=$(cat ./templates/model_templates.txt | grep -e "<<REL_ONE_TO_ONE>>" -A4 | tail -4)
+                filled_model_o2o_rel=$(echo "$model_o2o_rel" | sed -r "s/\{\{ ONE_TABLE_NAME \}\}/$to_table_lc/g")
+                filled_model_o2o_rel=$(echo "$filled_model_o2o_rel" | sed -r "s/\{\{ ONE_TABLE_CLASS \}\}/$to_table/g")
+                filled_model_o2o_rel=$(echo "$filled_model_o2o_rel" | sed 's/\\n/\\\\n/g')
+                awk -v var="$filled_model_o2o_rel\n" '{gsub(/{{ RELATION }}/, var); print}' $file_name > temp.txt
+                cat temp.txt > $file_name
+
+            else
+                echo "ERROR: RELATIONSHIP DOES NOT EXIST"
+            fi
+
         done
 
         # Relationship second pass - Get all the table_2 of the current table being created

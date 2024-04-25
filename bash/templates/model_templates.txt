@@ -4,6 +4,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from app.database import Base
 
+
 {{ ASSOCIATION_OBJECT }}
 
 class {{ CLASS_NAME }}(Base):
@@ -24,22 +25,30 @@ class {{ CLASS_NAME }}(Base):
 {{ COLUMN_NAME }} = Column(String)
     {{ COLUMNS }}
 
+
 <<ASSOC_TABLE>>
-class {{ SELF_NAME }}{{ OTHER_NAME }}Association(Base):
-    __tablename__ = 'pet_trainer_association'
+class {{ SELF_CLASS }}{{ OTHER_CLASS }}Association(Base):
+    __tablename__ = '{{ SELF_TABLE_NAME }}_{{ OTHER_TABLE_NAME }}_association'
 
     # Foreign Keys in Association table
     {{ SELF_TABLE_NAME }}_id = Column(ForeignKey('{{ SELF_TABLE_NAME }}.id'), primary_key=True)
-    {{ OTHER_TABLE_NAME }}_id = Column(ForeignKey('{{ OTHER_TABLE_NAME }}.id'), primary_key=True)
+    {{ OTHER_TABLE_NAME }}_id = Column(ForeignKey('{{ OTHER_TABLE_NAME }}.{{ OTHER_TABLE_NAME }}_id'), primary_key=True)
 
 <<REL_MANY_TO_ONE>>
-{{ MANY_TABLE_NAME }}_id = Column(Integer, ForeignKey("{{ SELF_MANY_FKEY }}.id"))
-{{ MANY_TABLE_NAME }} = relationship("{{ MANY_TABLE_CLASS }}", back_populates="{{ SELF_POP_FIELD }}", uselist=False)
+{{ MANY_TABLE_NAME }}_id = Column(Integer, ForeignKey("{{ SELF_POP_FIELD }}_{{ MANY_TABLE_NAME }}.id"))
+    {{ MANY_TABLE_NAME }} = relationship("{{ MANY_TABLE_CLASS }}", back_populates="{{ SELF_POP_FIELD }}s", uselist=False)
+    
+    {{ RELATION }}
 
 <<REL_MANY_TO_MANY>>
 {{ MANY_TABLE_NAME }} = relationship(
-    "{{ MANY_TABLE_CLASS }}", secondary="{{ ASSOC_TABLE_NAME }}", back_populates='{{ SELF_POP_FIELD }}')
+        "{{ MANY_TABLE_CLASS }}", secondary="{{ ASSOC_TABLE_NAME }}", back_populates='{{ SELF_POP_FIELD }}s')
+
+
+    {{ RELATION }}
 
 <<REL_ONE_TO_ONE>>
 {{ ONE_TABLE_NAME }}_id = Column(Integer, ForeignKey("{{ ONE_TABLE_NAME }}.id"))
-{{ ONE_TABLE_NAME }} = relationship("{{ MANY_TABLE_CLASS }}", back_populates="{{ SELF_POP_FIELD }}", uselist=False)
+    {{ ONE_TABLE_NAME }} = relationship("{{ ONE_TABLE_CLASS }}", back_populates="{{ SELF_POP_FIELD }}", uselist=False)
+
+    {{ RELATION }}
