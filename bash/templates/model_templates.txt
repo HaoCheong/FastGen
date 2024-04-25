@@ -17,9 +17,11 @@ class {{ CLASS_NAME }}(Base):
 
     {{ RELATION }}
 
+
 <<COLUMN_INTEGER>>
 {{ COLUMN_NAME }} = Column(Integer)
     {{ COLUMNS }}
+
 
 <<COLUMN_STRING>>
 {{ COLUMN_NAME }} = Column(String)
@@ -34,11 +36,13 @@ class {{ SELF_CLASS }}{{ OTHER_CLASS }}Association(Base):
     {{ SELF_TABLE_NAME }}_id = Column(ForeignKey('{{ SELF_TABLE_NAME }}.id'), primary_key=True)
     {{ OTHER_TABLE_NAME }}_id = Column(ForeignKey('{{ OTHER_TABLE_NAME }}.{{ OTHER_TABLE_NAME }}_id'), primary_key=True)
 
+
 <<REL_MANY_TO_ONE>>
 {{ MANY_TABLE_NAME }}_id = Column(Integer, ForeignKey("{{ SELF_POP_FIELD }}_{{ MANY_TABLE_NAME }}.id"))
     {{ MANY_TABLE_NAME }} = relationship("{{ MANY_TABLE_CLASS }}", back_populates="{{ SELF_POP_FIELD }}s", uselist=False)
     
     {{ RELATION }}
+
 
 <<REL_MANY_TO_MANY>>
 {{ MANY_TABLE_NAME }} = relationship(
@@ -47,8 +51,12 @@ class {{ SELF_CLASS }}{{ OTHER_CLASS }}Association(Base):
 
     {{ RELATION }}
 
+
 <<REL_ONE_TO_ONE>>
 {{ ONE_TABLE_NAME }}_id = Column(Integer, ForeignKey("{{ ONE_TABLE_NAME }}.id"))
     {{ ONE_TABLE_NAME }} = relationship("{{ ONE_TABLE_CLASS }}", back_populates="{{ SELF_POP_FIELD }}", uselist=False)
 
     {{ RELATION }}
+
+
+---
