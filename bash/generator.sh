@@ -72,7 +72,6 @@ function generate_models() {
         # Add the one offs replacements
         sed -r -i "s/\{\{ CLASS_NAME \}\}/$model/g" $file_name
         sed -r -i "s/\{\{ TABLE_NAME \}\}/$model_lc/g" $file_name
-        # Add the table name
 
         # Create get all the column
         model_cols=$(jq -r ' .tables[] | select(.name == "'$model'") | .columns[] | [.column_name, .column_type] | join(",") ' config.json)
@@ -101,6 +100,26 @@ function generate_models() {
                 awk -v var="$filled_model_column_int" '{gsub(/{{ COLUMNS }}/, var); print}' $file_name > temp.txt
                 cat temp.txt > $file_name
             fi
+        done
+
+        # Relationship first pass - Get all the table_1 of the current table being created
+        curr_model_relations=$(jq -r ' .relationships[] | select(.table_1 == "'$model'") | [.table_1, .table_2, .type] | join(",")' config.json)
+        for relation in $curr_model_relations
+        do
+            to_table=$(echo $relation | cut -d"," -f2)
+            table_rel=$(echo $relation | cut -d"," -f3)
+
+            echo PASS 1 $to_table $table_rel
+        done
+
+        # Relationship second pass - Get all the table_2 of the current table being created
+        curr_model_relations=$(jq -r ' .relationships[] | select(.table_2 == "'$model'") | [.table_2, .table_1, .type] | join(",")' config.json)
+        for relation in $curr_model_relations
+        do
+            from_table=$(echo $relation | cut -d"," -f2)
+            table_rel=$(echo $relation | cut -d"," -f3)
+
+            echo PASS 2 $from_table $table_rel
         done
 
         clean_template $file_name
