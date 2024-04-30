@@ -2,6 +2,7 @@
 <<SCHEMA_BASE>>
 from typing import List, Union, Optional
 from pydantic import BaseModel
+from datetime import datetime
 
 {{ SCHEMAS }}
 
@@ -18,21 +19,21 @@ class {{ SELF_TABLE_CLASS }}Base(BaseModel):
     class Config:
         orm_mode = True
 
-    {{ SCHEMAS }}
+{{ SCHEMAS }}
 
 
 <<CREATE_SCHEMA_CLASS>>
 class {{ SELF_TABLE_CLASS }}Create({{ SELF_TABLE_CLASS }}Base):
     pass
 
-    {{ SCHEMAS }}
+{{ SCHEMAS }}
 
 
 <<READ_NR_SCHEMA_CLASS>>
 class {{ SELF_TABLE_CLASS }}ReadNR({{ SELF_TABLE_CLASS }}Base):
     id: int
 
-    {{ SCHEMAS }}
+{{ SCHEMAS }}
 
 
 <<SCHEMAS_STRING>>
@@ -46,7 +47,7 @@ class {{ SELF_TABLE_CLASS }}ReadNR({{ SELF_TABLE_CLASS }}Base):
 
 
 <<SCHEMAS_JSON>>
-{{ COLUMN_NAME }}: json
+{{ COLUMN_NAME }}: { TO_ADD }
     {{ SCHEMA_TYPES }}
 
 
@@ -59,12 +60,10 @@ class {{ SELF_TABLE_CLASS }}ReadNR({{ SELF_TABLE_CLASS }}Base):
 
 <<READ_WR_SCHEMA_CLASS>>
 class {{ SELF_TABLE_CLASS }}ReadWR({{ SELF_TABLE_CLASS }}ReadNR):
-
     {{ WR_IMPORTS }}
-
     {{ WR_SCHEMAS }}
 
-    {{ SCHEMAS }}
+{{ SCHEMAS }}
 
 
 <<WR_IMPORT>>
@@ -72,17 +71,12 @@ from app.schemas.{{ OTHER_TABLE_NAME }}_schemas import {{ OTHER_TABLE_CLASS }}Re
     {{ WR_IMPORTS }}
 
 
-<<WR_SCHEMA_o2o>>
+<<WR_SCHEMA_UNION>>
 {{ OTHER_TABLE_NAME }}: Union[{{ OTHER_TABLE_CLASS }}ReadNR, None]
     {{ WR_SCHEMAS }}
 
 
-<<WR_SCHEMA_m2o>>
-{{ OTHER_TABLE_NAME }}: Union[{{ OTHER_TABLE_CLASS }}ReadNR, None]
-    {{ WR_SCHEMAS }}
-
-
-<<WR_SCHEMA_m2m>>
+<<WR_SCHEMA_LIST>>
 {{ OTHER_TABLE_NAME }}: List[{{ OTHER_TABLE_CLASS }}ReadNR]
     {{ WR_SCHEMAS }}
 
@@ -94,25 +88,25 @@ class {{ SELF_TABLE_CLASS }}Update({{ SELF_TABLE_CLASS }}Base):
 
     {{ SCHEMAS_UPDATE }}
 
-    {{ SCHEMAS }}
+{{ SCHEMAS }}
 
 
 <<UPDATE_SCHEMA_STRING>>
-{{ SCHEMA_NAME }} = Optional[str]: None
+{{ SCHEMA_NAME }}: Optional[str] = None
     {{ SCHEMAS_UPDATE }}
 
 
 <<UPDATE_SCHEMA_INTEGER>>
-{{ SCHEMA_NAME }} = Optional[int]: None
+{{ SCHEMA_NAME }}: Optional[int] = None
     {{ SCHEMAS_UPDATE }}
 
 
 <<UPDATE_SCHEMA_JSON>>
-{{ SCHEMA_NAME }} = Optional[JSON]: None
+{{ SCHEMA_NAME }}: Optional[{ TO_ADD }] = None
     {{ SCHEMAS_UPDATE }}
 
 
 <<UPDATE_SCHEMA_DATETIME>>
-{{ SCHEMA_NAME }} = Optional[Datetime]: None
+{{ SCHEMA_NAME }}: Optional[datetime] = None
     {{ SCHEMAS_UPDATE }}
 

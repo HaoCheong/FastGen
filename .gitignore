@@ -178,3 +178,4 @@ pyrightconfig.json
 app/
 temp.txt
 project/
+prestart_config.json
