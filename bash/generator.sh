@@ -79,9 +79,9 @@ function generate_schemas() {
 
         # Generating READ NR
 
-        # Generating READ WR
+        # Generating READ WR (Needs to do 2 relationship passes, on to-from and another from-to)
 
-        # Generating UPDATE
+        # Generating Update
 
     done
 }
