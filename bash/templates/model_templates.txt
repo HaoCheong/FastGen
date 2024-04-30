@@ -74,10 +74,12 @@ class {{ SELF_CLASS }}{{ OTHER_CLASS }}Association(Base):
     
     {{ RELATION }}
 
+
 <<LINK_REL_MANY_TO_MANY>>
 {{ OTHER_TABLE_NAME }}s = relationship("{{ OTHER_TABLE_CLASS }}", secondary="{{ OTHER_TABLE_NAME }}_{{ SELF_TABLE_NAME }}_association", back_populates='{{ SELF_TABLE_NAME }}s')
 
     {{ RELATION }}
+
 
 <<LINK_REL_ONE_TO_ONE>>
 {{ OTHER_TABLE_NAME }} = relationship("{{ OTHER_TABLE_CLASS }}", back_populates="{{ SELF_TABLE_NAME }}", uselist=False)

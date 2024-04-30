@@ -1,0 +1,118 @@
+
+<<SCHEMA_BASE>>
+from typing import List, Union, Optional
+from pydantic import BaseModel
+
+{{ SCHEMAS }}
+
+{{ SELF_TABLE_CLASS }}Base.update_forward_refs()
+
+
+########## OTHER SCHEMAS RELATED ##########
+
+<<BASE_SCHEMA_CLASS>>
+class {{ SELF_TABLE_CLASS }}Base(BaseModel):
+    
+    {{ SCHEMA_TYPES }}
+
+    class Config:
+        orm_mode = True
+
+    {{ SCHEMAS }}
+
+
+<<CREATE_SCHEMA_CLASS>>
+class {{ SELF_TABLE_CLASS }}Create({{ SELF_TABLE_CLASS }}Base):
+    pass
+
+    {{ SCHEMAS }}
+
+
+<<READ_NR_SCHEMA_CLASS>>
+class {{ SELF_TABLE_CLASS }}ReadNR({{ SELF_TABLE_CLASS }}Base):
+    id: int
+
+    {{ SCHEMAS }}
+
+
+<<SCHEMAS_STRING>>
+{{ COLUMN_NAME }}: str
+    {{ SCHEMA_TYPES }}
+
+
+<<SCHEMAS_INTEGER>>
+{{ COLUMN_NAME }}: int
+    {{ SCHEMA_TYPES }}
+
+
+<<SCHEMAS_JSON>>
+{{ COLUMN_NAME }}: json
+    {{ SCHEMA_TYPES }}
+
+
+<<SCHEMAS_DATETIME>>
+{{ COLUMN_NAME }}: datetime
+    {{ SCHEMA_TYPES }}
+
+
+########## READ WR SCHEMAS RELATED ##########
+
+<<READ_WR_SCHEMA_CLASS>>
+class {{ SELF_TABLE_CLASS }}ReadWR({{ SELF_TABLE_CLASS }}ReadNR):
+
+    {{ WR_IMPORTS }}
+
+    {{ WR_SCHEMAS }}
+
+    {{ SCHEMAS }}
+
+
+<<WR_IMPORT>>
+from app.schemas.{{ OTHER_TABLE_NAME }}_schemas import {{ OTHER_TABLE_CLASS }}ReadNR
+    {{ WR_IMPORTS }}
+
+
+<<WR_SCHEMA_o2o>>
+{{ OTHER_TABLE_NAME }}: Union[{{ OTHER_TABLE_CLASS }}ReadNR, None]
+    {{ WR_SCHEMAS }}
+
+
+<<WR_SCHEMA_m2o>>
+{{ OTHER_TABLE_NAME }}: Union[{{ OTHER_TABLE_CLASS }}ReadNR, None]
+    {{ WR_SCHEMAS }}
+
+
+<<WR_SCHEMA_m2m>>
+{{ OTHER_TABLE_NAME }}: List[{{ OTHER_TABLE_CLASS }}ReadNR]
+    {{ WR_SCHEMAS }}
+
+
+########## UPDATE SCHEMAS RELATED ##########
+
+<<UPDATE_SCHEMA_CLASS>>
+class {{ SELF_TABLE_CLASS }}Update({{ SELF_TABLE_CLASS }}Base):
+
+    {{ SCHEMAS_UPDATE }}
+
+    {{ SCHEMAS }}
+
+
+<<UPDATE_SCHEMA_STRING>>
+{{ SCHEMA_NAME }} = Optional[str]: None
+    {{ SCHEMAS_UPDATE }}
+
+
+<<UPDATE_SCHEMA_INTEGER>>
+{{ SCHEMA_NAME }} = Optional[int]: None
+    {{ SCHEMAS_UPDATE }}
+
+
+<<UPDATE_SCHEMA_JSON>>
+{{ SCHEMA_NAME }} = Optional[JSON]: None
+    {{ SCHEMAS_UPDATE }}
+
+
+<<UPDATE_SCHEMA_DATETIME>>
+{{ SCHEMA_NAME }} = Optional[Datetime]: None
+    {{ SCHEMAS_UPDATE }}
+
