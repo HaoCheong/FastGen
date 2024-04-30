@@ -7,15 +7,17 @@ function generate_models() {
     do
         echo "> Generating model for $model"
         model_lc=$(echo "$model" | tr '[:upper:]' '[:lower:]')
-        file_name=./project/app/models/"$model_lc"_model.py
+        camel_case=$(echo "$model" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
+        file_name=./project/app/models/"$camel_case"_model.py
+        table_name=$(jq -r '.tables[] | select(.name == "'$model'") | .tablename ' config.json)
 
         # Create default template
         model_template=$(cat ./templates/model_templates.txt | grep -e "<<MODEL_BASE>>" -A16 | tail -16)
-        echo "$model_template" > ./project/app/models/"$model_lc"_model.py
+        echo "$model_template" > ./project/app/models/"$camel_case"_model.py
 
         # Add the one offs replacements
         sed -r -i "s/\{\{ CLASS_NAME \}\}/$model/g" $file_name
-        sed -r -i "s/\{\{ TABLE_NAME \}\}/$model_lc/g" $file_name
+        sed -r -i "s/\{\{ TABLE_NAME \}\}/$table_name/g" $file_name
 
         # Create get all the column
         model_cols=$(jq -r ' .tables[] | select(.name == "'$model'") | .columns[] | [.column_name, .column_type] | join(",") ' config.json)
