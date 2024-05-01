@@ -2,7 +2,7 @@
 
 # TEST CLEAR
 
-
+TEMP_TXT=/dev/shm/temp.txt
 
 # Generate the base directories
 function generate_base_directories() {
@@ -55,8 +55,6 @@ source schema_generator.sh
 
 # Generate all the required crud functions
 # function generate_cruds() {
-
-
     
 #     echo "======== GENERATE CRUD FILES ========"
     
@@ -98,8 +96,20 @@ fi
 generate_base_directories
 generate_base_files
 
-# generate_models
+generate_models
 generate_schemas
 
 
+# CLEAN UP
+rm $TEMP_TXT
 
+
+
+
+
+# ====== Standardise Name ======
+# - SELF... - Relates to the current class in question
+# - OTHER... - Relates to the other, related class in question
+# - ..._CLASS_CC - Camel Case version of the class name (nutrition_plan, pet)
+# - ..._CLASS_STD - Standard version of the class name (NutritionPlan, Pet)
+# - ..._TABLE_NAME - relates to the explicit name of the table (table_name = "xyz")

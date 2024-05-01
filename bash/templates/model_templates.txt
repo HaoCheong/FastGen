@@ -40,23 +40,23 @@ class {{ SELF_CLASS_STD }}(Base):
 
 <<ASSOC_TABLE>>
 class {{ SELF_CLASS_STD }}{{ OTHER_CLASS_STD }}Association(Base):
-    __tablename__ = '{{ SELF_CLASS_LC }}_{{ OTHER_CLASS_LC }}_association'
+    __tablename__ = '{{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_association'
 
     # Foreign Keys in Association table
-    {{ SELF_CLASS_LC }}_id = Column(ForeignKey('{{ SELF_CLASS_LC }}.id'), primary_key=True)
-    {{ OTHER_CLASS_LC }}_id = Column(ForeignKey('{{ OTHER_CLASS_LC }}.id'), primary_key=True)
+    {{ SELF_CLASS_CC }}_id = Column(ForeignKey('{{ SELF_CLASS_CC }}.id'), primary_key=True)
+    {{ OTHER_CLASS_CC }}_id = Column(ForeignKey('{{ OTHER_CLASS_CC }}.id'), primary_key=True)
 
 
 <<REL_MANY_TO_ONE>>
-{{ OTHER_CLASS_LC }}_id = Column(Integer, ForeignKey("{{ SELF_CLASS_LC }}_{{ OTHER_CLASS_LC }}.id"))
-    {{ OTHER_CLASS_LC }} = relationship("{{ OTHER_CLASS_STD }}", back_populates="{{ SELF_CLASS_LC }}s", uselist=False)
+{{ OTHER_CLASS_CC }}_id = Column(Integer, ForeignKey("{{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}.id"))
+    {{ OTHER_CLASS_CC }} = relationship("{{ OTHER_CLASS_STD }}", back_populates="{{ SELF_CLASS_CC }}s", uselist=False)
     
     {{ RELATION }}
 
 
 <<REL_MANY_TO_MANY>>
-{{ OTHER_CLASS_LC }}s = relationship(
-        "{{ OTHER_CLASS_STD }}", secondary="{{ ASSOC_CLASS_LC }}", back_populates='{{ SELF_CLASS_LC }}s')
+{{ OTHER_CLASS_CC }}s = relationship(
+        "{{ OTHER_CLASS_STD }}", secondary="{{ ASSOC_CLASS_CC }}", back_populates='{{ SELF_CLASS_CC }}s')
 
 
     {{ RELATION }}
@@ -64,24 +64,24 @@ class {{ SELF_CLASS_STD }}{{ OTHER_CLASS_STD }}Association(Base):
 
 <<REL_ONE_TO_ONE>>
 {{ OTHER_CLASS_CC }}_id = Column(Integer, ForeignKey("{{ OTHER_CLASS_CC }}.id"))
-    {{ OTHER_CLASS_CC }} = relationship("{{ OTHER_CLASS_STD }}", back_populates="{{ SELF_CLASS_LC }}", uselist=False)
+    {{ OTHER_CLASS_CC }} = relationship("{{ OTHER_CLASS_STD }}", back_populates="{{ SELF_CLASS_CC }}", uselist=False)
 
     {{ RELATION }}
 
 
 <<LINK_REL_MANY_TO_ONE>>
-{{ OTHER_CLASS_LC }}s = relationship("{{ OTHER_CLASS_STD }}", back_populates="{{ SELF_CLASS_LC }}")
+{{ OTHER_CLASS_CC }}s = relationship("{{ OTHER_CLASS_STD }}", back_populates="{{ SELF_CLASS_CC }}")
     
     {{ RELATION }}
 
 
 <<LINK_REL_MANY_TO_MANY>>
-{{ OTHER_CLASS_LC }}s = relationship("{{ OTHER_CLASS_STD }}", secondary="{{ OTHER_CLASS_LC }}_{{ SELF_CLASS_LC }}_association", back_populates='{{ SELF_CLASS_LC }}s')
+{{ OTHER_CLASS_CC }}s = relationship("{{ OTHER_CLASS_STD }}", secondary="{{ OTHER_CLASS_CC }}_{{ SELF_CLASS_CC }}_association", back_populates='{{ SELF_CLASS_CC }}s')
 
     {{ RELATION }}
 
 
 <<LINK_REL_ONE_TO_ONE>>
-{{ OTHER_CLASS_LC }} = relationship("{{ OTHER_CLASS_STD }}", back_populates="{{ SELF_CLASS_LC }}", uselist=False)
+{{ OTHER_CLASS_CC }} = relationship("{{ OTHER_CLASS_STD }}", back_populates="{{ SELF_CLASS_CC }}", uselist=False)
 
     {{ RELATION }}

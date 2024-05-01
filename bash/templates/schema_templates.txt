@@ -67,17 +67,17 @@ class {{ SELF_CLASS_STD }}ReadWR({{ SELF_CLASS_STD }}ReadNR):
 
 
 <<WR_IMPORT>>
-from app.schemas.{{ OTHER_CLASS_LC }}_schemas import {{ OTHER_CLASS_STD }}ReadNR
+from app.schemas.{{ OTHER_CLASS_CC }}_schemas import {{ OTHER_CLASS_STD }}ReadNR
     {{ WR_IMPORTS }}
 
 
 <<WR_SCHEMA_UNION>>
-{{ OTHER_CLASS_LC }}: Union[{{ OTHER_CLASS_STD }}ReadNR, None]
+{{ OTHER_CLASS_CC }}: Union[{{ OTHER_CLASS_STD }}ReadNR, None]
     {{ WR_SCHEMAS }}
 
 
 <<WR_SCHEMA_LIST>>
-{{ OTHER_CLASS_LC }}: List[{{ OTHER_CLASS_STD }}ReadNR]
+{{ OTHER_CLASS_CC }}: List[{{ OTHER_CLASS_STD }}ReadNR]
     {{ WR_SCHEMAS }}
 
 
