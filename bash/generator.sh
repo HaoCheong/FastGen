@@ -20,10 +20,6 @@ function generate_base_directories() {
     mkdir ./project/tests/populate
 }
 
-# Generate the known files
-function generate_base_files() {
-    cp ./base/helper.temp ./project/app/helpers.py
-}
 
 # Generate the known files and directories
 function generate_base_files() {
@@ -40,7 +36,7 @@ function generate_base_files() {
     touch ./project/tests/unit/__init__.py
 
     # Generate predictable files
-    cp ./templates/base/helpers.temp ./project/app/helpers.py
+    cp ./templates/helpers_templates.txt ./project/app/helpers.py
 }
 
 # Clean the template from all the unused tags
@@ -57,6 +53,39 @@ function clean_template() {
 source model_generator.sh
 source schema_generator.sh
 
+# Generate all the required crud functions
+# function generate_cruds() {
+
+
+    
+#     echo "======== GENERATE CRUD FILES ========"
+    
+#     for crud in $(jq -r '.tables[] | .name ' config.json)
+#     do
+#         echo "> Generating CRUDs for $crud"
+#         crud_lc=$(echo "$crud" | tr '[:upper:]' '[:lower:]')
+#         camel_case=$(echo "$crud" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
+#         file_name=./project/app/cruds/"$camel_case"_cruds.py
+#         table_name=$(jq -r '.tables[] | select(.name == "'$crud'") | .tablename ' config.json)
+
+
+#     done
+
+
+#     ## Populate the base files
+
+#     # Generate the assignment files
+#     curr_model_relations=$(jq -r ' .relationships[] | select(.table_2 == "'$model'") | [.table_2, .table_1, .type] | join(",")' config.json)
+#     for relation in $curr_model_relations
+#     do
+#         from_table=$(echo $relation | cut -d"," -f2)
+#         from_table_lc=$(echo "$from_table" | tr '[:upper:]' '[:lower:]')
+#         table_rel=$(echo $relation | cut -d"," -f3)
+#     done
+
+#     ## Populate the assignment files
+# }
+
 
 # ========== Main ========== 
 # ERASE test project
@@ -68,6 +97,7 @@ fi
 # BASE GEN
 generate_base_directories
 generate_base_files
+
 # generate_models
 generate_schemas
 

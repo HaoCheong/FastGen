@@ -7,11 +7,11 @@ from app.database import Base
 
 {{ ASSOCIATION_OBJECT }}
 
-class {{ CLASS_NAME }}(Base):
+class {{ SELF_CLASS_STD }}(Base):
 
     __tablename__ = "{{ TABLE_NAME }}"
 
-    # {{ CLASS_NAME }} Fields
+    # {{ SELF_CLASS_STD }} Fields
     id = Column(Integer, primary_key=True, index=True)
     {{ COLUMNS }}
 
@@ -39,49 +39,49 @@ class {{ CLASS_NAME }}(Base):
 
 
 <<ASSOC_TABLE>>
-class {{ SELF_CLASS }}{{ OTHER_CLASS }}Association(Base):
-    __tablename__ = '{{ SELF_TABLE_NAME }}_{{ OTHER_TABLE_NAME }}_association'
+class {{ SELF_CLASS_STD }}{{ OTHER_CLASS_STD }}Association(Base):
+    __tablename__ = '{{ SELF_CLASS_LC }}_{{ OTHER_CLASS_LC }}_association'
 
     # Foreign Keys in Association table
-    {{ SELF_TABLE_NAME }}_id = Column(ForeignKey('{{ SELF_TABLE_NAME }}.id'), primary_key=True)
-    {{ OTHER_TABLE_NAME }}_id = Column(ForeignKey('{{ OTHER_TABLE_NAME }}.{{ OTHER_TABLE_NAME }}_id'), primary_key=True)
+    {{ SELF_CLASS_LC }}_id = Column(ForeignKey('{{ SELF_CLASS_LC }}.id'), primary_key=True)
+    {{ OTHER_CLASS_LC }}_id = Column(ForeignKey('{{ OTHER_CLASS_LC }}.id'), primary_key=True)
 
 
 <<REL_MANY_TO_ONE>>
-{{ MANY_TABLE_NAME }}_id = Column(Integer, ForeignKey("{{ SELF_TABLE_NAME }}_{{ MANY_TABLE_NAME }}.id"))
-    {{ MANY_TABLE_NAME }} = relationship("{{ MANY_TABLE_CLASS }}", back_populates="{{ SELF_TABLE_NAME }}s", uselist=False)
+{{ OTHER_CLASS_LC }}_id = Column(Integer, ForeignKey("{{ SELF_CLASS_LC }}_{{ OTHER_CLASS_LC }}.id"))
+    {{ OTHER_CLASS_LC }} = relationship("{{ OTHER_CLASS_STD }}", back_populates="{{ SELF_CLASS_LC }}s", uselist=False)
     
     {{ RELATION }}
 
 
 <<REL_MANY_TO_MANY>>
-{{ MANY_TABLE_NAME }} = relationship(
-        "{{ MANY_TABLE_CLASS }}", secondary="{{ ASSOC_TABLE_NAME }}", back_populates='{{ SELF_TABLE_NAME }}s')
+{{ OTHER_CLASS_LC }}s = relationship(
+        "{{ OTHER_CLASS_STD }}", secondary="{{ ASSOC_CLASS_LC }}", back_populates='{{ SELF_CLASS_LC }}s')
 
 
     {{ RELATION }}
 
 
 <<REL_ONE_TO_ONE>>
-{{ ONE_TABLE_NAME }}_id = Column(Integer, ForeignKey("{{ ONE_TABLE_NAME }}.id"))
-    {{ ONE_TABLE_NAME }} = relationship("{{ ONE_TABLE_CLASS }}", back_populates="{{ SELF_TABLE_NAME }}", uselist=False)
+{{ OTHER_CLASS_CC }}_id = Column(Integer, ForeignKey("{{ OTHER_CLASS_CC }}.id"))
+    {{ OTHER_CLASS_CC }} = relationship("{{ OTHER_CLASS_STD }}", back_populates="{{ SELF_CLASS_LC }}", uselist=False)
 
     {{ RELATION }}
 
 
 <<LINK_REL_MANY_TO_ONE>>
-{{ OTHER_TABLE_NAME }}s = relationship("{{ OTHER_TABLE_CLASS }}", back_populates="{{ SELF_TABLE_NAME }}")
+{{ OTHER_CLASS_LC }}s = relationship("{{ OTHER_CLASS_STD }}", back_populates="{{ SELF_CLASS_LC }}")
     
     {{ RELATION }}
 
 
 <<LINK_REL_MANY_TO_MANY>>
-{{ OTHER_TABLE_NAME }}s = relationship("{{ OTHER_TABLE_CLASS }}", secondary="{{ OTHER_TABLE_NAME }}_{{ SELF_TABLE_NAME }}_association", back_populates='{{ SELF_TABLE_NAME }}s')
+{{ OTHER_CLASS_LC }}s = relationship("{{ OTHER_CLASS_STD }}", secondary="{{ OTHER_CLASS_LC }}_{{ SELF_CLASS_LC }}_association", back_populates='{{ SELF_CLASS_LC }}s')
 
     {{ RELATION }}
 
 
 <<LINK_REL_ONE_TO_ONE>>
-{{ OTHER_TABLE_NAME }} = relationship("{{ OTHER_TABLE_CLASS }}", back_populates="{{ SELF_TABLE_NAME }}", uselist=False)
+{{ OTHER_CLASS_LC }} = relationship("{{ OTHER_CLASS_STD }}", back_populates="{{ SELF_CLASS_LC }}", uselist=False)
 
     {{ RELATION }}

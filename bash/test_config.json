@@ -79,7 +79,7 @@
 			]
 		},
 		{ 
-			"name": "Nutrition",
+			"name": "NutritionPlan",
 			"tablename": "nutrition_plan",
 			"metadata": {
 				"name": "Nutrition Plan",

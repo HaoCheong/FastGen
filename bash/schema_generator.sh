@@ -7,18 +7,17 @@ function generate_schemas() {
 
         # Generating base file
         echo "> Generating schema for $schema"
-        schema_lc=$(echo "$schema" | tr '[:upper:]' '[:lower:]')
-        camel_case=$(echo "$schema" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
-        file_name=./project/app/schemas/"$camel_case"_schemas.py
+        schema_cc=$(echo "$schema" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
+        file_name=./project/app/schemas/"$schema_cc"_schemas.py
         table_name=$(jq -r '.tables[] | select(.name == "'$schema'") | .tablename ' config.json)
 
         schema_template=$(cat ./templates/schema_templates.txt | grep -e "<<SCHEMA_BASE>>" -A7 | tail -7)
-        filled_schema_template=$(echo "$schema_template" | sed -r "s/\{\{ SELF_TABLE_CLASS \}\}/$schema/g")
-        echo "$filled_schema_template" > ./project/app/schemas/"$camel_case"_schemas.py
+        filled_schema_template=$(echo "$schema_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$schema/g")
+        echo "$filled_schema_template" > ./project/app/schemas/"$schema_cc"_schemas.py
 
         # Generating BASE
         schema_base_template=$(cat ./templates/schema_templates.txt | grep -e "<<BASE_SCHEMA_CLASS>>" -A8 | tail -8)
-        filled_schema_base_template=$(echo "$schema_base_template" | sed -r "s/\{\{ SELF_TABLE_CLASS \}\}/$schema/g")
+        filled_schema_base_template=$(echo "$schema_base_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$schema/g")
         awk -v var="$filled_schema_base_template" '{gsub(/{{ SCHEMAS }}/, var); print}' $file_name > temp.txt
         cat temp.txt > $file_name
         
@@ -76,19 +75,19 @@ function generate_schemas() {
         
         # Generating CREATE
         schema_create_template=$(cat ./templates/schema_templates.txt | grep -e "<<CREATE_SCHEMA_CLASS>>" -A4 | tail -4)
-        filled_schema_create_template=$(echo "$schema_create_template" | sed -r "s/\{\{ SELF_TABLE_CLASS \}\}/$schema/g")
+        filled_schema_create_template=$(echo "$schema_create_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$schema/g")
         awk -v var="$filled_schema_create_template" '{gsub(/{{ SCHEMAS }}/, var); print}' $file_name > temp.txt
         cat temp.txt > $file_name
 
         # Generating READ NR
         schema_read_nr_template=$(cat ./templates/schema_templates.txt | grep -e "<<READ_NR_SCHEMA_CLASS>>" -A4 | tail -4)
-        filled_schema_read_nr_template=$(echo "$schema_read_nr_template" | sed -r "s/\{\{ SELF_TABLE_CLASS \}\}/$schema/g")
+        filled_schema_read_nr_template=$(echo "$schema_read_nr_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$schema/g")
         awk -v var="$filled_schema_read_nr_template" '{gsub(/{{ SCHEMAS }}/, var); print}' $file_name > temp.txt
         cat temp.txt > $file_name
 
         # Generating READ WR (Needs to do 2 relationship passes, on to-from and another from-to)
         schema_read_wr_template=$(cat ./templates/schema_templates.txt | grep -e "<<READ_WR_SCHEMA_CLASS>>" -A5 | tail -5)
-        filled_schema_read_wr_template=$(echo "$schema_read_wr_template" | sed -r "s/\{\{ SELF_TABLE_CLASS \}\}/$schema/g")
+        filled_schema_read_wr_template=$(echo "$schema_read_wr_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$schema/g")
         awk -v var="$filled_schema_read_wr_template" '{gsub(/{{ SCHEMAS }}/, var); print}' $file_name > temp.txt
         cat temp.txt > $file_name
         
@@ -98,12 +97,12 @@ function generate_schemas() {
         for relation in $curr_model_relations
         do
             to_table=$(echo $relation | cut -d"," -f2)
-            to_table_lc=$(echo "$to_table" | tr '[:upper:]' '[:lower:]')
+            to_table_cc=$(echo "$to_table" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
             table_rel=$(echo $relation | cut -d"," -f3)
 
             schema_import_rel=$(cat ./templates/schema_templates.txt | grep -e "<<WR_IMPORT>>" -A2 | tail -2)
-            filled_schema_import_rel=$(echo "$schema_import_rel" | sed -r "s/\{\{ OTHER_TABLE_NAME \}\}/$to_table_lc/g")
-            filled_schema_import_rel=$(echo "$filled_schema_import_rel" | sed -r "s/\{\{ OTHER_TABLE_CLASS \}\}/$to_table/g")
+            filled_schema_import_rel=$(echo "$schema_import_rel" | sed -r "s/\{\{ OTHER_CLASS_LC \}\}/$to_table_cc/g")
+            filled_schema_import_rel=$(echo "$filled_schema_import_rel" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$to_table/g")
             awk -v var="$filled_schema_import_rel\n" '{gsub(/{{ WR_IMPORTS }}/, var); print}' $file_name > temp.txt
             cat temp.txt > $file_name
 
@@ -112,8 +111,8 @@ function generate_schemas() {
 
                 # Generate Link m2m schema import
                 schema_m2m_link_rel=$(cat ./templates/schema_templates.txt | grep -e "<<WR_SCHEMA_LIST>>" -A2 | tail -2)
-                filled_schema_m2m_link_rel=$(echo "$schema_m2m_link_rel" | sed -r "s/\{\{ OTHER_TABLE_NAME \}\}/$to_table_lc/g")
-                filled_schema_m2m_link_rel=$(echo "$filled_schema_m2m_link_rel" | sed -r "s/\{\{ OTHER_TABLE_CLASS \}\}/$to_table/g")
+                filled_schema_m2m_link_rel=$(echo "$schema_m2m_link_rel" | sed -r "s/\{\{ OTHER_CLASS_LC \}\}/$to_table_cc/g")
+                filled_schema_m2m_link_rel=$(echo "$filled_schema_m2m_link_rel" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$to_table/g")
                 awk -v var="$filled_schema_m2m_link_rel\n" '{gsub(/{{ WR_SCHEMAS }}/, var); print}' $file_name > temp.txt
                 cat temp.txt > $file_name
             
@@ -122,8 +121,8 @@ function generate_schemas() {
 
                 # Generate Link m2o schema import
                 schema_m2o_link_rel=$(cat ./templates/schema_templates.txt | grep -e "<<WR_SCHEMA_UNION>>" -A2 | tail -2)
-                filled_schema_m2o_link_rel=$(echo "$schema_m2o_link_rel" | sed -r "s/\{\{ OTHER_TABLE_NAME \}\}/$to_table_lc/g")
-                filled_schema_m2o_link_rel=$(echo "$filled_schema_m2o_link_rel" | sed -r "s/\{\{ OTHER_TABLE_CLASS \}\}/$to_table/g")
+                filled_schema_m2o_link_rel=$(echo "$schema_m2o_link_rel" | sed -r "s/\{\{ OTHER_CLASS_LC \}\}/$to_table_cc/g")
+                filled_schema_m2o_link_rel=$(echo "$filled_schema_m2o_link_rel" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$to_table/g")
                 awk -v var="$filled_schema_m2o_link_rel\n" '{gsub(/{{ WR_SCHEMAS }}/, var); print}' $file_name > temp.txt
                 cat temp.txt > $file_name
                 
@@ -132,8 +131,8 @@ function generate_schemas() {
 
                 # Generate Link o2o schema import
                 schema_o2o_link_rel=$(cat ./templates/schema_templates.txt | grep -e "<<WR_SCHEMA_UNION>>" -A2 | tail -2)
-                filled_schema_o2o_link_rel=$(echo "$schema_o2o_link_rel" | sed -r "s/\{\{ OTHER_TABLE_NAME \}\}/$to_table_lc/g")
-                filled_schema_o2o_link_rel=$(echo "$filled_schema_o2o_link_rel" | sed -r "s/\{\{ OTHER_TABLE_CLASS \}\}/$to_table/g")
+                filled_schema_o2o_link_rel=$(echo "$schema_o2o_link_rel" | sed -r "s/\{\{ OTHER_CLASS_LC \}\}/$to_table_cc/g")
+                filled_schema_o2o_link_rel=$(echo "$filled_schema_o2o_link_rel" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$to_table/g")
                 awk -v var="$filled_schema_o2o_link_rel\n" '{gsub(/{{ WR_SCHEMAS }}/, var); print}' $file_name > temp.txt
                 cat temp.txt > $file_name
 
@@ -147,14 +146,14 @@ function generate_schemas() {
         for relation in $curr_model_relations
         do
             from_table=$(echo $relation | cut -d"," -f2)
-            from_table_lc=$(echo "$from_table" | tr '[:upper:]' '[:lower:]')
+            from_table_cc=$(echo "$from_table" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
             table_rel=$(echo $relation | cut -d"," -f3)
 
             # echo $schema, $from_table, $table_rel
 
             schema_import_rel=$(cat ./templates/schema_templates.txt | grep -e "<<WR_IMPORT>>" -A2 | tail -2)
-            filled_schema_import_rel=$(echo "$schema_import_rel" | sed -r "s/\{\{ OTHER_TABLE_NAME \}\}/$from_table_lc/g")
-            filled_schema_import_rel=$(echo "$filled_schema_import_rel" | sed -r "s/\{\{ OTHER_TABLE_CLASS \}\}/$from_table/g")
+            filled_schema_import_rel=$(echo "$schema_import_rel" | sed -r "s/\{\{ OTHER_CLASS_LC \}\}/$from_table_cc/g")
+            filled_schema_import_rel=$(echo "$filled_schema_import_rel" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$from_table/g")
             awk -v var="$filled_schema_import_rel\n" '{gsub(/{{ WR_IMPORTS }}/, var); print}' $file_name > temp.txt
             cat temp.txt > $file_name
 
@@ -164,8 +163,8 @@ function generate_schemas() {
 
                 # Generate Link m2m schema import
                 schema_m2m_link_rel=$(cat ./templates/schema_templates.txt | grep -e "<<WR_SCHEMA_LIST>>" -A2 | tail -2)
-                filled_schema_m2m_link_rel=$(echo "$schema_m2m_link_rel" | sed -r "s/\{\{ OTHER_TABLE_NAME \}\}/$from_table_lc/g")
-                filled_schema_m2m_link_rel=$(echo "$filled_schema_m2m_link_rel" | sed -r "s/\{\{ OTHER_TABLE_CLASS \}\}/$from_table/g")
+                filled_schema_m2m_link_rel=$(echo "$schema_m2m_link_rel" | sed -r "s/\{\{ OTHER_CLASS_LC \}\}/$from_table_cc/g")
+                filled_schema_m2m_link_rel=$(echo "$filled_schema_m2m_link_rel" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$from_table/g")
                 awk -v var="$filled_schema_m2m_link_rel\n" '{gsub(/{{ WR_SCHEMAS }}/, var); print}' $file_name > temp.txt
                 cat temp.txt > $file_name
             
@@ -174,8 +173,8 @@ function generate_schemas() {
 
                 # Generate Link m2o schema import
                 schema_m2o_link_rel=$(cat ./templates/schema_templates.txt | grep -e "<<WR_SCHEMA_LIST>>" -A2 | tail -2)
-                filled_schema_m2o_link_rel=$(echo "$schema_m2o_link_rel" | sed -r "s/\{\{ OTHER_TABLE_NAME \}\}/$from_table_lc/g")
-                filled_schema_m2o_link_rel=$(echo "$filled_schema_m2o_link_rel" | sed -r "s/\{\{ OTHER_TABLE_CLASS \}\}/$from_table/g")
+                filled_schema_m2o_link_rel=$(echo "$schema_m2o_link_rel" | sed -r "s/\{\{ OTHER_CLASS_LC \}\}/$from_table_cc/g")
+                filled_schema_m2o_link_rel=$(echo "$filled_schema_m2o_link_rel" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$from_table/g")
                 awk -v var="$filled_schema_m2o_link_rel\n" '{gsub(/{{ WR_SCHEMAS }}/, var); print}' $file_name > temp.txt
                 cat temp.txt > $file_name
 
@@ -184,8 +183,8 @@ function generate_schemas() {
 
                 # Generate Link o2o schema import
                 schema_o2o_link_rel=$(cat ./templates/schema_templates.txt | grep -e "<<WR_SCHEMA_UNION>>" -A2 | tail -2)
-                filled_schema_o2o_link_rel=$(echo "$schema_o2o_link_rel" | sed -r "s/\{\{ OTHER_TABLE_NAME \}\}/$from_table_lc/g")
-                filled_schema_o2o_link_rel=$(echo "$filled_schema_o2o_link_rel" | sed -r "s/\{\{ OTHER_TABLE_CLASS \}\}/$from_table/g")
+                filled_schema_o2o_link_rel=$(echo "$schema_o2o_link_rel" | sed -r "s/\{\{ OTHER_CLASS_LC \}\}/$from_table_cc/g")
+                filled_schema_o2o_link_rel=$(echo "$filled_schema_o2o_link_rel" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$from_table/g")
                 awk -v var="$filled_schema_o2o_link_rel\n" '{gsub(/{{ WR_SCHEMAS }}/, var); print}' $file_name > temp.txt
                 cat temp.txt > $file_name
 
@@ -196,7 +195,7 @@ function generate_schemas() {
 
         # Generating Update
         schema_update_template=$(cat ./templates/schema_templates.txt | grep -e "<<UPDATE_SCHEMA_CLASS>>" -A4 | tail -4)
-        filled_schema_update_template=$(echo "$schema_update_template" | sed -r "s/\{\{ SELF_TABLE_CLASS \}\}/$schema/g")
+        filled_schema_update_template=$(echo "$schema_update_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$schema/g")
         awk -v var="$filled_schema_update_template" '{gsub(/{{ SCHEMAS }}/, var); print}' $file_name > temp.txt
         cat temp.txt > $file_name
 

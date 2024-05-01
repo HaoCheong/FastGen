@@ -79,7 +79,7 @@
 			]
 		},
 		{ 
-			"name": "Nutrition",
+			"name": "NutritionPlan",
 			"tablename": "nutrition_plan",
 			"metadata": {
 				"name": "Nutrition Plan",
@@ -117,7 +117,7 @@
 		},
 		{
 			"table_1": "Pet",
-			"table_2": "Nutrition",
+			"table_2": "NutritionPlan",
 			"type": "o2o"
 		}
 	]

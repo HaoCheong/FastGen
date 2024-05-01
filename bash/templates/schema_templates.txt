@@ -6,13 +6,13 @@ from datetime import datetime
 
 {{ SCHEMAS }}
 
-{{ SELF_TABLE_CLASS }}Base.update_forward_refs()
+{{ SELF_CLASS_STD }}Base.update_forward_refs()
 
 
 ########## OTHER SCHEMAS RELATED ##########
 
 <<BASE_SCHEMA_CLASS>>
-class {{ SELF_TABLE_CLASS }}Base(BaseModel):
+class {{ SELF_CLASS_STD }}Base(BaseModel):
     
     {{ SCHEMA_TYPES }}
 
@@ -23,14 +23,14 @@ class {{ SELF_TABLE_CLASS }}Base(BaseModel):
 
 
 <<CREATE_SCHEMA_CLASS>>
-class {{ SELF_TABLE_CLASS }}Create({{ SELF_TABLE_CLASS }}Base):
+class {{ SELF_CLASS_STD }}Create({{ SELF_CLASS_STD }}Base):
     pass
 
 {{ SCHEMAS }}
 
 
 <<READ_NR_SCHEMA_CLASS>>
-class {{ SELF_TABLE_CLASS }}ReadNR({{ SELF_TABLE_CLASS }}Base):
+class {{ SELF_CLASS_STD }}ReadNR({{ SELF_CLASS_STD }}Base):
     id: int
 
 {{ SCHEMAS }}
@@ -59,7 +59,7 @@ class {{ SELF_TABLE_CLASS }}ReadNR({{ SELF_TABLE_CLASS }}Base):
 ########## READ WR SCHEMAS RELATED ##########
 
 <<READ_WR_SCHEMA_CLASS>>
-class {{ SELF_TABLE_CLASS }}ReadWR({{ SELF_TABLE_CLASS }}ReadNR):
+class {{ SELF_CLASS_STD }}ReadWR({{ SELF_CLASS_STD }}ReadNR):
     {{ WR_IMPORTS }}
     {{ WR_SCHEMAS }}
 
@@ -67,24 +67,24 @@ class {{ SELF_TABLE_CLASS }}ReadWR({{ SELF_TABLE_CLASS }}ReadNR):
 
 
 <<WR_IMPORT>>
-from app.schemas.{{ OTHER_TABLE_NAME }}_schemas import {{ OTHER_TABLE_CLASS }}ReadNR
+from app.schemas.{{ OTHER_CLASS_LC }}_schemas import {{ OTHER_CLASS_STD }}ReadNR
     {{ WR_IMPORTS }}
 
 
 <<WR_SCHEMA_UNION>>
-{{ OTHER_TABLE_NAME }}: Union[{{ OTHER_TABLE_CLASS }}ReadNR, None]
+{{ OTHER_CLASS_LC }}: Union[{{ OTHER_CLASS_STD }}ReadNR, None]
     {{ WR_SCHEMAS }}
 
 
 <<WR_SCHEMA_LIST>>
-{{ OTHER_TABLE_NAME }}: List[{{ OTHER_TABLE_CLASS }}ReadNR]
+{{ OTHER_CLASS_LC }}: List[{{ OTHER_CLASS_STD }}ReadNR]
     {{ WR_SCHEMAS }}
 
 
 ########## UPDATE SCHEMAS RELATED ##########
 
 <<UPDATE_SCHEMA_CLASS>>
-class {{ SELF_TABLE_CLASS }}Update({{ SELF_TABLE_CLASS }}Base):
+class {{ SELF_CLASS_STD }}Update({{ SELF_CLASS_STD }}Base):
 
     {{ SCHEMAS_UPDATE }}
 
