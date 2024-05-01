@@ -1,50 +1,67 @@
 
 <<CRUD_BASE>>
 from sqlalchemy.orm import Session
-import app.models.{{ SELF_TABLE_NAME }}_model as model
-import app.schemas.{{ SELF_TABLE_NAME }}_schemas as schemas
+import app.models.{{ SELF_CLASS_CC }}_model as model
+import app.schemas.{{ SELF_CLASS_CC }}_schemas as schemas
+
+{{ CRUDS }}
 
 
-
-def create_pet(db: Session, pet: schemas.PetCreate):
-    db_pet = model.Pet(
-        name=pet.name,
-        age=pet.age,
+<<CRUD_CREATE>>
+def create_{{ SELF_CLASS_CC }}(db: Session, {{ SELF_CLASS_CC }}: schemas.{{ SELF_CLASS_STD }}Create):
+    db_{{ SELF_CLASS_CC }} = model.{{ SELF_CLASS_STD }}(
+        name={{ SELF_CLASS_CC }}.name,
+        age={{ SELF_CLASS_CC }}.age,
     )
 
-    db.add(db_pet)
+    db.add(db_{{ SELF_CLASS_CC }})
     db.commit()
-    db.refresh(db_pet)
-    return db_pet
+    db.refresh(db_{{ SELF_CLASS_CC }})
+    return db_{{ SELF_CLASS_CC }}
+
+{{ CRUDS }}
 
 
-def get_all_pets(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(model.Pet).offset(skip).limit(limit).all()
+<<CRUD_GET_ALL>>
+def get_all_{{ SELF_CLASS_CC }}s(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(model.{{ SELF_CLASS_STD }}).offset(skip).limit(limit).all()
+
+{{ CRUDS }}
 
 
-def get_pet_by_id(db: Session, id: int):
-    return db.query(model.Pet).filter(model.Pet.id == id).first()
+<<CRUD_GET_BY_ID>>
+def get_{{ SELF_CLASS_CC }}_by_id(db: Session, id: int):
+    return db.query(model.{{ SELF_CLASS_STD }}).filter(model.{{ SELF_CLASS_STD }}.id == id).first()
+
+{{ CRUDS }}
 
 
-def update_pet_by_id(db: Session, id: int, new_pet: schemas.PetUpdate):
-    db_pet = db.query(model.Pet).filter(model.Pet.id == id).first()
+<<CRUD_UPDATE>>
+def update_{{ SELF_CLASS_CC }}_by_id(db: Session, id: int, new_{{ SELF_CLASS_CC }}: schemas.{{ SELF_CLASS_STD }}Update):
+    db_{{ SELF_CLASS_CC }} = db.query(model.{{ SELF_CLASS_STD }}).filter(model.{{ SELF_CLASS_STD }}.id == id).first()
 
-    # Converts new_pet from model.object to dictionary
-    update_pet = new_pet.dict(exclude_unset=True)
+    # Converts new_{{ SELF_CLASS_CC }} from model.object to dictionary
+    update_{{ SELF_CLASS_CC }} = new_{{ SELF_CLASS_CC }}.dict(exclude_unset=True)
 
-    # Loops through dictionary and update db_pet
-    for key, value in update_pet.items():
-        setattr(db_pet, key, value)
+    # Loops through dictionary and update db_{{ SELF_CLASS_CC }}
+    for key, value in update_{{ SELF_CLASS_CC }}.items():
+        setattr(db_{{ SELF_CLASS_CC }}, key, value)
 
-    db.add(db_pet)
+    db.add(db_{{ SELF_CLASS_CC }})
     db.commit()
-    db.refresh(db_pet)
-    return db_pet
+    db.refresh(db_{{ SELF_CLASS_CC }})
+    return db_{{ SELF_CLASS_CC }}
+
+{{ CRUDS }}
 
 
-def delete_pet_by_id(db: Session, id: int):
-    db_pet = db.query(model.Pet).filter(model.Pet.id == id).first()
+<<CRUD_DELETE>>
+def delete_{{ SELF_CLASS_CC }}_by_id(db: Session, id: int):
+    db_{{ SELF_CLASS_CC }} = db.query(model.{{ SELF_CLASS_STD }}).filter(model.{{ SELF_CLASS_STD }}.id == id).first()
 
-    db.delete(db_pet)
+    db.delete(db_{{ SELF_CLASS_CC }})
     db.commit()
     return {"Success": True}
+
+{{ CRUDS }}
+
