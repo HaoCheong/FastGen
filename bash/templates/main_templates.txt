@@ -1,0 +1,48 @@
+<<MAIN_BASE>>
+from fastapi import FastAPI
+
+import app.database as database
+import app.metadata as metadata
+
+from app.database import engine
+from fastapi.middleware.cors import CORSMiddleware
+
+{{ MAIN_IMPORTS }}
+
+database.Base.metadata.create_all(bind=engine)
+
+# Initialising instance of the backend
+app = FastAPI(
+        openapi_tags=metadata.tags_metadata,
+        swagger_ui_parameters=metadata.swagger_ui_parameters,
+        title=metadata.app_title,
+        description=metadata.app_desc,
+        version=metadata.app_version,
+    )
+
+# Handles CORS, currently available to any origin. Need to be tweaked for security
+origins = ['*']
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ======== ROOT ENDPOINT ========
+# Not necessary but good indication that connection been made
+
+@app.get("/")
+def root():
+    return {"connection": True}
+
+{{ ROUTER_INCLUDES }}
+
+<<ROUTER_BASE>>
+app.include_router({{ SELF_CLASS_CC }}_endpoints.router)
+{{ ROUTER_INCLUDES }}
+
+<<IMPORT_BASE>>
+import app.endpoints.{{ SELF_CLASS_CC }}_endpoints as {{ SELF_CLASS_CC }}_endpoints
+{{ MAIN_IMPORTS }}

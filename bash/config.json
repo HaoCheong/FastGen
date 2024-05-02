@@ -1,4 +1,10 @@
 {
+	"project": {
+		"name": "Pets FastAPI",
+		"desc": "Project for FastAPI to test",
+		"version": "0.0.1",
+		"database_name": "pets"
+	},
 	"tables": [
 		{ 
 			"name": "Pet",

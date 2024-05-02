@@ -1,0 +1,31 @@
+<<METADATA_BASE>>
+tags_metadata = [
+    {{ METADATA_TAGS }}
+    {{ METADATA_ASSIGN_TAGS }}
+]
+
+swagger_ui_parameters = {
+    "syntaxHighlight": True
+}
+
+app_title = '{{ PROJECT_TITLE }}'
+app_version = '{{ PROJECT_VERS }}'
+app_desc = '''
+    {{ PROJECT_DESC }}
+'''
+
+<<METADATA_TAG>>
+{
+        "name": "{{ SELF_CLASS_STD }}",
+        "description": "Operations with {{ SELF_CLASS_STD }}s",
+    },
+
+    {{ METADATA_TAGS }}
+
+<<METADATA_ASSIGN_TAG>>
+{
+        "name": "{{ SELF_CLASS_STD }} Assignments",
+        "description": "Operations with {{ SELF_CLASS_STD }}s Assignments",
+    },
+
+    {{ METADATA_ASSIGN_TAGS }}

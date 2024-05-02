@@ -35,8 +35,7 @@ function generate_base_files() {
 
     touch ./project/tests/unit/__init__.py
 
-    # Generate predictable files
-    cp ./templates/helpers_templates.txt ./project/app/helpers.py
+    
 }
 
 # Clean the template from all the unused tags
@@ -48,6 +47,19 @@ function clean_template() {
     # Removes double new lines
     # How the fuck does this work
     sed -i -e ':a;N;$!ba;s/\n\n\n/\n/g' $1
+}
+
+# Generate remaining files
+function generate_main_files() {
+
+    # Generate Database
+
+    # Generate Metadata
+
+    # Generate Main
+
+    # Generate Helper
+    cp ./templates/helpers_templates.txt ./project/app/helpers.py
 }
 
 source model_generator.sh
@@ -70,6 +82,7 @@ generate_models
 generate_schemas
 generate_cruds
 generate_endpoints
+
 
 
 # CLEAN UP
