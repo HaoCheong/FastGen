@@ -53,6 +53,7 @@ function clean_template() {
 source model_generator.sh
 source schema_generator.sh
 source crud_generator.sh
+source endpoint_generator.sh
 
 # ========== Main ========== 
 # ERASE test project
@@ -68,12 +69,14 @@ generate_base_files
 generate_models
 generate_schemas
 generate_cruds
+generate_endpoints
 
 
 # CLEAN UP
+echo echo "======== CLEANING UP ========"
 rm $TEMP_TXT
 
-
+echo echo "======== COMPLETE ========"
 
 
 

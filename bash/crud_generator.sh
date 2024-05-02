@@ -69,7 +69,7 @@ function generate_cruds() {
         clean_template $TEMP_TXT
         cp $TEMP_TXT $file_name
 
-        # Generate the assignment files
+        # Generate the assignment files (Only one relationship pass)
         curr_crud_relations=$(jq -r ' .relationships[] | select(.table_1 == "'$crud'") | [.table_1, .table_2, .type] | join(",")' config.json)
         for relation in $curr_crud_relations
         do
@@ -79,7 +79,7 @@ function generate_cruds() {
             assign_file_name=./project/app/cruds/"$crud_cc"_"$to_table_cc"_assign.py
             table_rel=$(echo $relation | cut -d"," -f3)
 
-            echo ">> Generating Assignments for $to_table"
+            echo ">> Generating Assignments Operations for $to_table"
 
             crud_assign_template=$(cat ./templates/crud_templates.txt | grep -e "<<ASSIGNMENT_BASE>>" -A5 | tail -5)
             echo "$crud_assign_template" > $TEMP_TXT

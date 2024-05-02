@@ -1,0 +1,186 @@
+<<ENDPOINT_BASE>>
+from typing import List
+
+from app.helpers import get_db
+from fastapi import Depends, HTTPException, APIRouter
+from sqlalchemy.orm import Session
+
+import app.schemas.{{ SELF_CLASS_CC }}_schemas as schemas
+import app.cruds.{{ SELF_CLASS_CC }}_cruds as cruds
+
+router = APIRouter()
+
+{{ ENDPOINT_INSERT }}
+
+<<ENDPOINT_CREATE>>
+@router.post("/{{ SELF_CLASS_CC }}", response_model=schemas.{{ SELF_CLASS_STD }}ReadNR, tags=["{{ SELF_CLASS_STD }}"])
+def create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}: schemas.{{ SELF_CLASS_STD }}Create, db: Session = Depends(get_db)):
+    return cruds.create_{{ SELF_CLASS_CC }}(db=db, {{ SELF_CLASS_CC }}={{ SELF_CLASS_CC }})
+
+{{ ENDPOINT_INSERT }}
+
+
+<<ENDPOINT_GET_ALL>>
+@router.get("/{{ SELF_CLASS_CC }}s", response_model=List[schemas.{{ SELF_CLASS_STD }}ReadNR], tags=["{{ SELF_CLASS_STD }}s"])
+def get_all_{{ SELF_CLASS_CC }}s(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    db_{{ SELF_CLASS_CC }}s = cruds.get_all_{{ SELF_CLASS_CC }}s(db, skip, limit)
+    return db_{{ SELF_CLASS_CC }}s
+
+{{ ENDPOINT_INSERT }}
+
+
+<<ENDPOINT_GET_BY_ID>>
+@router.get("/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}", response_model=schemas.{{ SELF_CLASS_STD }}ReadWR, tags=["{{ SELF_CLASS_STD }}s"])
+def get_{{ SELF_CLASS_CC }}_by_id({{ SELF_CLASS_CC }}_id: int, db: Session = Depends(get_db)):
+    db_{{ SELF_CLASS_CC }} = cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
+    if not db_{{ SELF_CLASS_CC }}:
+        raise HTTPException(status_code=400, detail="{{ SELF_CLASS_STD }} does not exist")
+
+    return db_{{ SELF_CLASS_CC }}
+
+{{ ENDPOINT_INSERT }}
+
+
+<<ENDPOINT_UPDATE>>
+@router.patch("/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}", response_model=schemas.{{ SELF_CLASS_STD }}ReadNR, tags=["{{ SELF_CLASS_STD }}s"])
+def update_{{ SELF_CLASS_CC }}_by_id({{ SELF_CLASS_CC }}_id: int, new_{{ SELF_CLASS_CC }}: schemas.{{ SELF_CLASS_STD }}Update, db: Session = Depends(get_db)):
+    db_{{ SELF_CLASS_CC }} = cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
+    if not db_{{ SELF_CLASS_CC }}:
+        raise HTTPException(status_code=400, detail="{{ SELF_CLASS_STD }} does not exist")
+
+    return cruds.update_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id, new_{{ SELF_CLASS_CC }}=new_{{ SELF_CLASS_CC }})
+
+{{ ENDPOINT_INSERT }}
+
+
+<<ENDPOINT_DELETE>>
+@router.delete("/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}", tags=["{{ SELF_CLASS_STD }}s"])
+def delete_{{ SELF_CLASS_CC }}_by_id({{ SELF_CLASS_CC }}_id: int, db: Session = Depends(get_db)):
+    db_{{ SELF_CLASS_CC }} = cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
+    if not db_{{ SELF_CLASS_CC }}:
+        raise HTTPException(status_code=400, detail="{{ SELF_CLASS_STD }} does not exist")
+
+    return cruds.delete_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
+
+{{ ENDPOINT_INSERT }}
+
+
+<<ENDPOINT_ASSIGN_BASE>>
+from typing import List
+
+from app.helpers import get_db
+from fastapi import Depends, HTTPException, APIRouter
+from sqlalchemy.orm import Session
+
+router = APIRouter()
+
+import app.cruds.{{ SELF_CLASS_CC }}_cruds as {{ SELF_CLASS_CC }}_cruds
+import app.cruds.{{ OTHER_CLASS_CC }}_cruds as {{ OTHER_CLASS_CC }}_cruds
+import app.cruds.{{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign as {{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign
+
+{{ ENDPOINT_ASSIGN_INSERT }}
+
+<<ENDPOINT_ASSIGN_m2m>>
+@router.post("/assignTo{{ OTHER_CLASS_STD }}/{{{ SELF_CLASS_CC }}_id}/{{{ OTHER_CLASS_CC }}_id}", tags=["{{ SELF_CLASS_STD }} Assignments"])
+def assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}({{ SELF_CLASS_CC }}_id: int, {{ OTHER_CLASS_CC }}_id: str, db: Session = Depends(get_db)):
+    db_{{ OTHER_CLASS_CC }} = {{ OTHER_CLASS_CC }}_cruds.get_{{ OTHER_CLASS_CC }}_by_id(db, {{ OTHER_CLASS_CC }}_id={{ OTHER_CLASS_CC }}_id)
+    db_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}_cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
+
+    if not db_{{ OTHER_CLASS_CC }}:
+        raise HTTPException(status_code=400, detail="{{ OTHER_CLASS_STD }} does not exist")
+
+    if not db_{{ SELF_CLASS_CC }}:
+        raise HTTPException(status_code=400, detail="{{ SELF_CLASS_STD }} does not exist")
+
+    if db_{{ SELF_CLASS_CC }}.owner_id == None:
+        raise HTTPException(
+            status_code=400, detail="{{ SELF_CLASS_STD }} does not have an owner")
+
+    if db_{{ SELF_CLASS_CC }} in db_{{ OTHER_CLASS_CC }}.{{ SELF_CLASS_CC }}s:
+        raise HTTPException(
+            status_code=400, detail="{{ SELF_CLASS_STD }} already assigned to {{ OTHER_CLASS_CC }}")
+
+    return {{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign.assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}(db, {{ SELF_CLASS_CC }}_id={{ SELF_CLASS_CC }}_id, {{ OTHER_CLASS_CC }}_id={{ OTHER_CLASS_CC }}_id)
+
+@router.post("/unassignFrom{{ OTHER_CLASS_STD }}/{{{ SELF_CLASS_CC }}_id}/{{{ OTHER_CLASS_CC }}_id}", tags=["{{ SELF_CLASS_STD }} Assignments"])
+def unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}({{ SELF_CLASS_CC }}_id: int, {{ OTHER_CLASS_CC }}_id: str, db: Session = Depends(get_db)):
+    db_{{ OTHER_CLASS_CC }} = {{ OTHER_CLASS_CC }}_cruds.get_{{ OTHER_CLASS_CC }}_by_id(db, {{ OTHER_CLASS_CC }}_id={{ OTHER_CLASS_CC }}_id)
+    db_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}_cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
+
+    if not db_{{ OTHER_CLASS_CC }}:
+        raise HTTPException(status_code=400, detail="{{ OTHER_CLASS_STD }} does not exist")
+
+    if not db_{{ SELF_CLASS_CC }}:
+        raise HTTPException(status_code=400, detail="{{ SELF_CLASS_STD }} does not exist")
+
+    if db_{{ SELF_CLASS_CC }} not in db_{{ OTHER_CLASS_CC }}.{{ SELF_CLASS_CC }}s:
+        raise HTTPException(
+            status_code=400, detail="{{ SELF_CLASS_STD }} not assigned to {{ OTHER_CLASS_CC }}")
+
+    return {{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign.unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}(db, {{ SELF_CLASS_CC }}_id={{ SELF_CLASS_CC }}_id, {{ OTHER_CLASS_CC }}_id={{ OTHER_CLASS_CC }}_id)
+
+<<ENDPOINT_ASSIGN_m2o>>
+@router.post("/assignTo{{ OTHER_CLASS_STD }}/{{{ SELF_CLASS_CC }}_id}/{{{ OTHER_CLASS_CC }}_id}", tags=["{{ SELF_CLASS_STD }} Assignments"])
+def assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}({{ SELF_CLASS_CC }}_id: int, {{ OTHER_CLASS_CC }}_id: int, db: Session = Depends(get_db)):
+    db_{{ OTHER_CLASS_CC }} = {{ OTHER_CLASS_CC }}_cruds.get_{{ OTHER_CLASS_CC }}_by_id(db, id={{ OTHER_CLASS_CC }}_id)
+    db_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}_cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
+
+    if not db_{{ OTHER_CLASS_CC }}:
+        raise HTTPException(status_code=400, detail="{{ OTHER_CLASS_STD }} does not exist")
+
+    if not db_{{ SELF_CLASS_CC }}:
+        raise HTTPException(status_code=400, detail="{{ SELF_CLASS_STD }} does not exist")
+
+    if db_{{ SELF_CLASS_CC }} in db_{{ OTHER_CLASS_CC }}.{{ SELF_CLASS_CC }}s:
+        raise HTTPException(
+            status_code=400, detail="{{ SELF_CLASS_STD }} already assigned to {{ OTHER_CLASS_CC }}")
+
+    return {{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign.assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}(db, {{ SELF_CLASS_CC }}_id={{ SELF_CLASS_CC }}_id, {{ OTHER_CLASS_CC }}_id={{ OTHER_CLASS_CC }}_id)
+
+@router.post("/unassignFrom{{ OTHER_CLASS_STD }}/{{{ SELF_CLASS_CC }}_id}/{{{ OTHER_CLASS_CC }}_id}", tags=["{{ SELF_CLASS_STD }} Assignments"])
+def unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}({{ SELF_CLASS_CC }}_id: int, {{ OTHER_CLASS_CC }}_id: int, db: Session = Depends(get_db)):
+    db_{{ OTHER_CLASS_CC }} = {{ OTHER_CLASS_CC }}_cruds.get_{{ OTHER_CLASS_CC }}_by_id(db, id={{ OTHER_CLASS_CC }}_id)
+    db_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}_cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
+
+    if not db_{{ OTHER_CLASS_CC }}:
+        raise HTTPException(status_code=400, detail="{{ OTHER_CLASS_STD }} does not exist")
+
+    if not db_{{ SELF_CLASS_CC }}:
+        raise HTTPException(status_code=400, detail="{{ SELF_CLASS_STD }} does not exist")
+
+    if db_{{ SELF_CLASS_CC }} not in db_{{ OTHER_CLASS_CC }}.{{ SELF_CLASS_CC }}s:
+        raise HTTPException(
+            status_code=400, detail="{{ SELF_CLASS_STD }} not assigned to {{ OTHER_CLASS_CC }}")
+
+    return {{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign.unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}(db, {{ SELF_CLASS_CC }}_id={{ SELF_CLASS_CC }}_id, {{ OTHER_CLASS_CC }}_id={{ OTHER_CLASS_CC }}_id)
+
+<<ENDPOINT_ASSIGN_o2o>>
+@router.post("/assignTo{{ OTHER_CLASS_STD }}/{{{ SELF_CLASS_CC }}_id}/{{{ OTHER_CLASS_CC }}_id}", tags=["{{ SELF_CLASS_STD }} Assignments"])
+def assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}({{ SELF_CLASS_CC }}_id: int, {{ OTHER_CLASS_CC }}_id: int, db: Session = Depends(get_db)):
+    db_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}_cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
+    db_{{ OTHER_CLASS_CC }} = {{ OTHER_CLASS_CC }}_cruds.get_{{ OTHER_CLASS_CC }}_by_id(db, {{ OTHER_CLASS_CC }}_id={{ OTHER_CLASS_CC }}_id)
+
+    if not db_{{ OTHER_CLASS_CC }}:
+        raise HTTPException(status_code=400, detail="{{ OTHER_CLASS_CC }} does not exist")
+
+    if not db_{{ SELF_CLASS_CC }}:
+        raise HTTPException(status_code=400, detail="{{ SELF_CLASS_STD }} does not exist")
+    
+    if  db_{{ SELF_CLASS_CC }}.{{ OTHER_CLASS_CC }} is not None:
+        raise HTTPException(
+            status_code=400, detail="{{ SELF_CLASS_STD }} already assigned to a {{ OTHER_CLASS_CC }}")
+    
+    return {{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign.assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}(db, {{ SELF_CLASS_CC }}_id={{ SELF_CLASS_CC }}_id, {{ OTHER_CLASS_CC }}_id={{ OTHER_CLASS_CC }}_id)
+
+@router.post("/unassignFrom{{ OTHER_CLASS_STD }}/{{{ SELF_CLASS_CC }}_id}", tags=["{{ SELF_CLASS_STD }} Assignments"])
+def unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}({{ SELF_CLASS_CC }}_id: int, db: Session = Depends(get_db)):
+    db_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}_cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
+
+    if not db_{{ SELF_CLASS_CC }}:
+        raise HTTPException(status_code=400, detail="{{ SELF_CLASS_STD }} does not exist")
+    
+    if db_{{ SELF_CLASS_CC }}.{{ OTHER_CLASS_CC }} is None:
+        raise HTTPException(
+            status_code=400, detail="{{ SELF_CLASS_STD }} not assigned to a {{ OTHER_CLASS_CC }}")
+    
+    return {{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign.unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}(db, {{ SELF_CLASS_CC }}_id={{ SELF_CLASS_CC }}_id)
