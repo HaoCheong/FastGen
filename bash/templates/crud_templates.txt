@@ -10,8 +10,7 @@ import app.schemas.{{ SELF_CLASS_CC }}_schemas as schemas
 <<CRUD_CREATE>>
 def create_{{ SELF_CLASS_CC }}(db: Session, {{ SELF_CLASS_CC }}: schemas.{{ SELF_CLASS_STD }}Create):
     db_{{ SELF_CLASS_CC }} = model.{{ SELF_CLASS_STD }}(
-        name={{ SELF_CLASS_CC }}.name,
-        age={{ SELF_CLASS_CC }}.age,
+        {{ CRUD_FIELDS }}
     )
 
     db.add(db_{{ SELF_CLASS_CC }})
@@ -20,6 +19,11 @@ def create_{{ SELF_CLASS_CC }}(db: Session, {{ SELF_CLASS_CC }}: schemas.{{ SELF
     return db_{{ SELF_CLASS_CC }}
 
 {{ CRUDS }}
+
+
+<<CREATE_FIELD>>
+{{ FIELD_NAME }}={{ SELF_CLASS_CC }}.{{ FIELD_NAME }},
+        {{ CRUD_FIELDS }}
 
 
 <<CRUD_GET_ALL>>
@@ -64,4 +68,115 @@ def delete_{{ SELF_CLASS_CC }}_by_id(db: Session, id: int):
     return {"Success": True}
 
 {{ CRUDS }}
+
+
+<<ASSIGNMENT_BASE>>
+from sqlalchemy.orm import Session
+import app.models.{{ SELF_CLASS_CC }}_model as {{ SELF_CLASS_CC }}_models
+import app.models.{{ OTHER_CLASS_CC }}_model as {{ OTHER_CLASS_CC }}_models
+
+{{ ASSIGNMENT_INSERT }}
+
+<<ASSIGNMENT_m2m>>
+def assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}(db: Session, {{ SELF_CLASS_CC }}_id: int, {{ OTHER_CLASS_CC }}_id: int):
+    ''' Assign instance of {{ SELF_CLASS_CC }} to an {{ OTHER_CLASS_CC }}. Many to Many Relationship '''
+
+    # Getting both instance of {{ SELF_CLASS_STD }} and {{ OTHER_CLASS_STD }}
+    db_{{ SELF_CLASS_CC }} = db.query({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}).filter({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}.id == {{ SELF_CLASS_CC }}_id).first()
+    db_{{ OTHER_CLASS_CC }} = db.query({{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}).filter(
+        {{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}.{{ OTHER_CLASS_CC }}_id == {{ OTHER_CLASS_CC }}_id).first()
+
+    db_{{ OTHER_CLASS_CC }}.{{ SELF_CLASS_CC }}s.append(db_{{ SELF_CLASS_CC }})
+
+    # Update them on the DB side, and commit transaction to the database
+    db.add(db_{{ OTHER_CLASS_CC }})
+    db.commit()
+
+    return {"Success", True}
+
+def unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}(db: Session, {{ SELF_CLASS_CC }}_id: int, {{ OTHER_CLASS_CC }}_id: int):
+    ''' Unassign instance of {{ SELF_CLASS_CC }} to an {{ OTHER_CLASS_CC }} '''
+
+    # Getting both instance of {{ SELF_CLASS_STD }} and {{ OTHER_CLASS_STD }}
+    db_{{ SELF_CLASS_CC }} = db.query({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}).filter({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}.id == {{ SELF_CLASS_CC }}_id).first()
+    db_{{ OTHER_CLASS_CC }} = db.query({{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}).filter(
+        {{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}.{{ OTHER_CLASS_CC }}_id == {{ OTHER_CLASS_CC }}_id).first()
+
+    db_{{ OTHER_CLASS_CC }}.{{ SELF_CLASS_CC }}s.remove(db_{{ SELF_CLASS_CC }})
+
+    # Update them on the DB side, and commit transaction to the database
+    db.add(db_{{ OTHER_CLASS_CC }})
+    db.commit()
+
+    return {"Success", True}
+
+
+<<ASSIGNMENT_m2o>>
+def assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}(db: Session, {{ SELF_CLASS_CC }}_id: int, {{ OTHER_CLASS_CC }}_id: int):
+    ''' Assign instance of {{ SELF_CLASS_CC }} to an {{ OTHER_CLASS_CC }}. Many to One Relationship '''
+
+    # Getting both instance of {{ SELF_CLASS_STD }} and {{ OTHER_CLASS_STD }}
+    db_{{ SELF_CLASS_CC }} = db.query({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}).filter({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}.id == {{ SELF_CLASS_CC }}_id).first()
+    db_{{ OTHER_CLASS_CC }} = db.query({{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}).filter(
+        {{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}.id == {{ OTHER_CLASS_CC }}_id).first()
+
+    # Treat adding relation like adding to {{ SELF_CLASS_CC }} {{ OTHER_CLASS_CC }}'s {{ SELF_CLASS_CC }}s list
+    db_{{ OTHER_CLASS_CC }}.{{ SELF_CLASS_CC }}s.append(db_{{ SELF_CLASS_CC }})
+
+    # Update them on the DB side, and commit transaction to the database
+    db.add(db_{{ OTHER_CLASS_CC }})
+    db.commit()
+
+    return {"Success", True}
+
+def unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}(db: Session, {{ SELF_CLASS_CC }}_id: int, {{ OTHER_CLASS_CC }}_id: int):
+    ''' Unassign instance of {{ SELF_CLASS_CC }} to an {{ OTHER_CLASS_CC }} '''
+
+    # Getting both instance of {{ SELF_CLASS_STD }} and {{ OTHER_CLASS_STD }}
+    db_{{ SELF_CLASS_CC }} = db.query({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}).filter({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}.id == {{ SELF_CLASS_CC }}_id).first()
+    db_{{ OTHER_CLASS_CC }} = db.query({{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}).filter(
+        {{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}.id == {{ OTHER_CLASS_CC }}_id).first()
+
+    # Treat removing relation like removing from {{ SELF_CLASS_CC }} {{ OTHER_CLASS_CC }}'s {{ SELF_CLASS_CC }}s list
+    db_{{ OTHER_CLASS_CC }}.{{ SELF_CLASS_CC }}s.remove(db_{{ SELF_CLASS_CC }})
+
+    # Update them on the DB side, and commit transaction to the database
+    db.add(db_{{ OTHER_CLASS_CC }})
+    db.commit()
+
+    return {"Success", True}
+
+
+<<ASSIGNMENT_o2o>>
+def assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}(db: Session, {{ SELF_CLASS_CC }}_id: int, {{ OTHER_CLASS_CC }}_id: int):
+    ''' Assign instance of {{ SELF_CLASS_CC }} to an {{ OTHER_CLASS_CC }}. One to One Relationship '''
+    # Getting both instance of {{ SELF_CLASS_STD }} and {{ OTHER_CLASS_STD }}
+    db_{{ SELF_CLASS_CC }} = db.query({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}).filter({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}.id == {{ SELF_CLASS_CC }}_id).first()
+    db_{{ OTHER_CLASS_CC }} = db.query({{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}).filter({{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}.id == {{ OTHER_CLASS_CC }}_id).first()
+
+    # Establish the relationship
+    db_{{ SELF_CLASS_CC }}.{{ OTHER_CLASS_CC }} = db_{{ OTHER_CLASS_CC }}
+
+    # Update them on the DB side, and commit transaction to the database
+    db.add(db_{{ SELF_CLASS_CC }})
+    db.commit()
+    return {"Success", True}
+
+def unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}(db: Session, {{ SELF_CLASS_CC }}_id: int):
+    ''' Unassign instance of {{ SELF_CLASS_CC }} to an {{ OTHER_CLASS_CC }} '''
+
+    # Getting both instance of {{ SELF_CLASS_STD }} and {{ OTHER_CLASS_STD }}
+    db_{{ SELF_CLASS_CC }} = db.query({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}).filter({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}.id == {{ SELF_CLASS_CC }}_id).first()
+    db_{{ OTHER_CLASS_CC }} = db.query({{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}).filter({{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}.id == db_{{ SELF_CLASS_CC }}.{{ OTHER_CLASS_CC }}.id).first()
+
+    # Clear their relationship
+    db_{{ SELF_CLASS_CC }}.{{ OTHER_CLASS_CC }} = None
+    db_{{ OTHER_CLASS_CC }}.{{ SELF_CLASS_CC }} = None
+
+    # Update them on the DB side, and commit transaction to the database
+    db.add(db_{{ SELF_CLASS_CC }})
+    db.add(db_{{ OTHER_CLASS_CC }})
+    db.commit()
+
+    return {"Success", True}
 
