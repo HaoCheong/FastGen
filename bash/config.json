@@ -86,9 +86,9 @@
 		},
 		{ 
 			"name": "NutritionPlan",
-			"tablename": "nutrition_plan",
+			"tablename": "nutrition_plans",
 			"metadata": {
-				"name": "Nutrition Plan",
+				"name": "NutritionPlans",
 				"desc": "Operations with Pets Nutrition Plan"
 			},
 			"columns": [

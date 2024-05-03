@@ -74,7 +74,7 @@ function generate_models() {
         do
             to_table=$(echo $relation | cut -d"," -f2)
             to_table_cc=$(echo "$to_table" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
-            
+            to_table_name=$(jq -r ' .tables[] | select(.name == "'$to_table'") | .tablename' config.json)
             table_rel=$(echo $relation | cut -d"," -f3)
 
             if [[ $table_rel == 'm2m' ]]
@@ -99,6 +99,8 @@ function generate_models() {
                 filled_assoc_table=$(echo "$filled_assoc_table" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$to_table/g")
                 filled_assoc_table=$(echo "$filled_assoc_table" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$model_cc/g")
                 filled_assoc_table=$(echo "$filled_assoc_table" | sed -r "s/\{\{ OTHER_CLASS_CC \}\}/$to_table_cc/g")
+                filled_assoc_table=$(echo "$filled_assoc_table" | sed -r "s/\{\{ SELF_TABLE_NAME \}\}/$table_name/g")
+                filled_assoc_table=$(echo "$filled_assoc_table" | sed -r "s/\{\{ OTHER_TABLE_NAME \}\}/$to_table_name/g")
                 filled_assoc_table=$(echo "$filled_assoc_table" | sed 's/\\n/\\\\n/g')
                 pop_file=$(awk -v var="$filled_assoc_table\n" '{gsub(/{{ ASSOCIATION_OBJECT }}/, var); print}' $TEMP_TXT)
                 echo "$pop_file" > $TEMP_TXT
@@ -112,6 +114,7 @@ function generate_models() {
                 filled_model_m2o_rel=$(echo "$model_m2o_rel" | sed -r "s/\{\{ OTHER_CLASS_CC \}\}/$to_table_cc/g")
                 filled_model_m2o_rel=$(echo "$filled_model_m2o_rel" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$model_cc/g")
                 filled_model_m2o_rel=$(echo "$filled_model_m2o_rel" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$to_table/g")
+                filled_model_m2o_rel=$(echo "$filled_model_m2o_rel" | sed -r "s/\{\{ OTHER_TABLE_NAME \}\}/$to_table_name/g")
                 filled_model_m2o_rel=$(echo "$filled_model_m2o_rel" | sed 's/\\n/\\\\n/g')
                 pop_file=$(awk -v var="$filled_model_m2o_rel\n" '{gsub(/{{ RELATION }}/, var); print}' $TEMP_TXT)
                 echo "$pop_file" > $TEMP_TXT
@@ -125,6 +128,7 @@ function generate_models() {
                 filled_model_o2o_rel=$(echo "$model_o2o_rel" | sed -r "s/\{\{ OTHER_CLASS_CC \}\}/$to_table_cc/g")
                 filled_model_o2o_rel=$(echo "$filled_model_o2o_rel" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$to_table/g")
                 filled_model_o2o_rel=$(echo "$filled_model_o2o_rel" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$model_cc/g")
+                filled_model_o2o_rel=$(echo "$filled_model_o2o_rel" | sed -r "s/\{\{ OTHER_TABLE_NAME \}\}/$to_table_name/g")
                 filled_model_o2o_rel=$(echo "$filled_model_o2o_rel" | sed 's/\\n/\\\\n/g')
                 pop_file=$(awk -v var="$filled_model_o2o_rel\n" '{gsub(/{{ RELATION }}/, var); print}' $TEMP_TXT)
                 echo "$pop_file" > $TEMP_TXT

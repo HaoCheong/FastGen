@@ -48,7 +48,7 @@ class {{ SELF_CLASS_STD }}{{ OTHER_CLASS_STD }}Association(Base):
 
 
 <<REL_MANY_TO_ONE>>
-{{ OTHER_CLASS_CC }}_id = Column(Integer, ForeignKey("{{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}.id"))
+{{ OTHER_CLASS_CC }}_id = Column(Integer, ForeignKey("{{ OTHER_TABLE_NAME }}.id"))
     {{ OTHER_CLASS_CC }} = relationship("{{ OTHER_CLASS_STD }}", back_populates="{{ SELF_CLASS_CC }}s", uselist=False)
     
     {{ RELATION }}

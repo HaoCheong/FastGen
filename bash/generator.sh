@@ -103,7 +103,7 @@ function generate_main_files() {
 
     # Generate Main
     file_name="./project/app/main.py"
-    main_template=$(cat ./templates/main_templates.txt | grep -e "<<MAIN_BASE>>" -A37 | tail -37)
+    main_template=$(cat ./templates/main_templates.txt | grep -e "<<MAIN_BASE>>" -A39 | tail -39)
     echo "$main_template" > $TEMP_TXT
 
     for table in $(jq -r ' .tables[] | .name ' config.json)
@@ -121,13 +121,17 @@ function generate_main_files() {
         filled_main_router_template=$(echo "$filled_main_router_template" | sed 's/\\n/\\\\n/g')
         pop_file=$(awk -v var="$filled_main_router_template" '{gsub(/{{ ROUTER_INCLUDES }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
+
     done
+
 
     clean_template $TEMP_TXT
     cp $TEMP_TXT $file_name
 
     # Generate Helper
     cp ./templates/helpers_templates.txt ./project/app/helpers.py
+
+    cp ./templates/requirements_template.txt ./project/requirements.txt
 }
 
 source model_generator.sh

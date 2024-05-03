@@ -13,7 +13,7 @@ router = APIRouter()
 {{ ENDPOINT_INSERT }}
 
 <<ENDPOINT_CREATE>>
-@router.post("/{{ SELF_CLASS_CC }}", response_model=schemas.{{ SELF_CLASS_STD }}ReadNR, tags=["{{ SELF_CLASS_STD }}"])
+@router.post("/{{ SELF_CLASS_CC }}", response_model=schemas.{{ SELF_CLASS_STD }}ReadNR, tags=["{{ SELF_CLASS_STD }}s"])
 def create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}: schemas.{{ SELF_CLASS_STD }}Create, db: Session = Depends(get_db)):
     return cruds.create_{{ SELF_CLASS_CC }}(db=db, {{ SELF_CLASS_CC }}={{ SELF_CLASS_CC }})
 
