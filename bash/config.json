@@ -10,7 +10,7 @@
 			"name": "Pet",
 			"tablename": "pets",
 			"metadata": {
-				"name": "Pets",
+				"name": "Pet",
 				"desc": "Operations with Pets Owner"
 			},
 			"columns": [
@@ -28,7 +28,7 @@
 			"name": "Owner",
 			"tablename": "owners",
 			"metadata": {
-				"name": "Owners",
+				"name": "Owner",
 				"desc": "Operations with Pets Owners"
 			},
 			"columns": [
@@ -54,7 +54,7 @@
 			"name": "Trainer",
 			"tablename": "trainers",
 			"metadata": {
-				"name": "Trainers",
+				"name": "Trainer",
 				"desc": "Operations with Pets Trainers"
 			},
 			"columns": [
@@ -88,7 +88,7 @@
 			"name": "NutritionPlan",
 			"tablename": "nutrition_plans",
 			"metadata": {
-				"name": "NutritionPlans",
+				"name": "NutritionPlan",
 				"desc": "Operations with Pets Nutrition Plan"
 			},
 			"columns": [

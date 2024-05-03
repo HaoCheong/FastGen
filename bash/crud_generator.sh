@@ -61,11 +61,11 @@ function generate_cruds() {
 
         # Generate Delete
         crud_delete_template=$(cat ./templates/crud_templates.txt | grep -e "<<CRUD_DELETE>>" -A8 | tail -8)
-        filled_delete_template=$(echo "$delete_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$crud_cc/g")
-        filled_delete_template=$(echo "$filled_delete_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$crud/g")
-        pop_file=$(awk -v var="$filled_delete_template" '{gsub(/{{ CRUDS }}/, var); print}' $TEMP_TXT)
+        filled_crud_delete_template=$(echo "$crud_delete_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$crud_cc/g")
+        filled_crud_delete_template=$(echo "$filled_crud_delete_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$crud/g")
+        pop_file=$(awk -v var="$filled_crud_delete_template" '{gsub(/{{ CRUDS }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
-
+        
         clean_template $TEMP_TXT
         cp $TEMP_TXT $file_name
 

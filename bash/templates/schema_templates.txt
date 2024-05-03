@@ -62,6 +62,7 @@ class {{ SELF_CLASS_STD }}ReadNR({{ SELF_CLASS_STD }}Base):
 class {{ SELF_CLASS_STD }}ReadWR({{ SELF_CLASS_STD }}ReadNR):
     {{ WR_IMPORTS }}
     {{ WR_SCHEMAS }}
+    pass
 
 {{ SCHEMAS }}
 
@@ -85,8 +86,9 @@ from app.schemas.{{ OTHER_CLASS_CC }}_schemas import {{ OTHER_CLASS_STD }}ReadNR
 
 <<UPDATE_SCHEMA_CLASS>>
 class {{ SELF_CLASS_STD }}Update({{ SELF_CLASS_STD }}Base):
-
+    
     {{ SCHEMAS_UPDATE }}
+    pass
 
 {{ SCHEMAS }}
 

@@ -93,7 +93,7 @@ function generate_schemas() {
         
 
         # Generating READ WR (Needs to do 2 relationship passes, on to-from and another from-to)
-        schema_read_wr_template=$(cat ./templates/schema_templates.txt | grep -e "<<READ_WR_SCHEMA_CLASS>>" -A5 | tail -5)
+        schema_read_wr_template=$(cat ./templates/schema_templates.txt | grep -e "<<READ_WR_SCHEMA_CLASS>>" -A6 | tail -6)
         filled_schema_read_wr_template=$(echo "$schema_read_wr_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$schema/g")
         pop_file=$(awk -v var="$filled_schema_read_wr_template" '{gsub(/{{ SCHEMAS }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
@@ -211,10 +211,18 @@ function generate_schemas() {
         done
 
         # Generating Update
-        schema_update_template=$(cat ./templates/schema_templates.txt | grep -e "<<UPDATE_SCHEMA_CLASS>>" -A4 | tail -4)
+        schema_update_template=$(cat ./templates/schema_templates.txt | grep -e "<<UPDATE_SCHEMA_CLASS>>" -A5 | tail -5)
         filled_schema_update_template=$(echo "$schema_update_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$schema/g")
         pop_file=$(awk -v var="$filled_schema_update_template" '{gsub(/{{ SCHEMAS }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
+
+        
+        # echo PRE $filled_schema_update_template
+        # if [[ -z "$schema_cols" ]]
+        # then
+        #     filled_schema_update_template=$(echo "$filled_schema_update_template" | sed -r "s/\{\{ SCHEMAS_UPDATE \}\}/pass/g")
+        # fi
+        
         
 
         for cols in $schema_cols

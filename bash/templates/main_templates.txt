@@ -43,6 +43,14 @@ def root():
 app.include_router({{ SELF_CLASS_CC }}_endpoints.router)
 {{ ROUTER_INCLUDES }}
 
+<<ROUTER_ASSIGNMENT_BASE>>
+app.include_router({{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign_endpoints.router)
+{{ ROUTER_INCLUDES }}
+
 <<IMPORT_BASE>>
 import app.endpoints.{{ SELF_CLASS_CC }}_endpoints as {{ SELF_CLASS_CC }}_endpoints
+{{ MAIN_IMPORTS }}
+
+<<IMPORT_ASSIGNMENT_BASE>>
+import app.endpoints.{{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign_endpoints as {{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign_endpoints
 {{ MAIN_IMPORTS }}

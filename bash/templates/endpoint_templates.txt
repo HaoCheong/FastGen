@@ -13,7 +13,7 @@ router = APIRouter()
 {{ ENDPOINT_INSERT }}
 
 <<ENDPOINT_CREATE>>
-@router.post("/{{ SELF_CLASS_CC }}", response_model=schemas.{{ SELF_CLASS_STD }}ReadNR, tags=["{{ SELF_CLASS_STD }}s"])
+@router.post("/{{ SELF_CLASS_CC }}", response_model=schemas.{{ SELF_CLASS_STD }}ReadNR, tags=["{{ SELF_CLASS_STD }}"])
 def create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}: schemas.{{ SELF_CLASS_STD }}Create, db: Session = Depends(get_db)):
     return cruds.create_{{ SELF_CLASS_CC }}(db=db, {{ SELF_CLASS_CC }}={{ SELF_CLASS_CC }})
 
@@ -21,7 +21,7 @@ def create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}: schemas.{{ SELF_CLASS_STD }}
 
 
 <<ENDPOINT_GET_ALL>>
-@router.get("/{{ SELF_CLASS_CC }}s", response_model=List[schemas.{{ SELF_CLASS_STD }}ReadNR], tags=["{{ SELF_CLASS_STD }}s"])
+@router.get("/{{ SELF_CLASS_CC }}s", response_model=List[schemas.{{ SELF_CLASS_STD }}ReadNR], tags=["{{ SELF_CLASS_STD }}"])
 def get_all_{{ SELF_CLASS_CC }}s(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     db_{{ SELF_CLASS_CC }}s = cruds.get_all_{{ SELF_CLASS_CC }}s(db, skip, limit)
     return db_{{ SELF_CLASS_CC }}s
@@ -30,7 +30,7 @@ def get_all_{{ SELF_CLASS_CC }}s(skip: int = 0, limit: int = 100, db: Session = 
 
 
 <<ENDPOINT_GET_BY_ID>>
-@router.get("/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}", response_model=schemas.{{ SELF_CLASS_STD }}ReadWR, tags=["{{ SELF_CLASS_STD }}s"])
+@router.get("/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}", response_model=schemas.{{ SELF_CLASS_STD }}ReadWR, tags=["{{ SELF_CLASS_STD }}"])
 def get_{{ SELF_CLASS_CC }}_by_id({{ SELF_CLASS_CC }}_id: int, db: Session = Depends(get_db)):
     db_{{ SELF_CLASS_CC }} = cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
     if not db_{{ SELF_CLASS_CC }}:
@@ -42,7 +42,7 @@ def get_{{ SELF_CLASS_CC }}_by_id({{ SELF_CLASS_CC }}_id: int, db: Session = Dep
 
 
 <<ENDPOINT_UPDATE>>
-@router.patch("/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}", response_model=schemas.{{ SELF_CLASS_STD }}ReadNR, tags=["{{ SELF_CLASS_STD }}s"])
+@router.patch("/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}", response_model=schemas.{{ SELF_CLASS_STD }}ReadNR, tags=["{{ SELF_CLASS_STD }}"])
 def update_{{ SELF_CLASS_CC }}_by_id({{ SELF_CLASS_CC }}_id: int, new_{{ SELF_CLASS_CC }}: schemas.{{ SELF_CLASS_STD }}Update, db: Session = Depends(get_db)):
     db_{{ SELF_CLASS_CC }} = cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
     if not db_{{ SELF_CLASS_CC }}:
@@ -54,7 +54,7 @@ def update_{{ SELF_CLASS_CC }}_by_id({{ SELF_CLASS_CC }}_id: int, new_{{ SELF_CL
 
 
 <<ENDPOINT_DELETE>>
-@router.delete("/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}", tags=["{{ SELF_CLASS_STD }}s"])
+@router.delete("/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}", tags=["{{ SELF_CLASS_STD }}"])
 def delete_{{ SELF_CLASS_CC }}_by_id({{ SELF_CLASS_CC }}_id: int, db: Session = Depends(get_db)):
     db_{{ SELF_CLASS_CC }} = cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
     if not db_{{ SELF_CLASS_CC }}:
