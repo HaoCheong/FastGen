@@ -16,10 +16,9 @@ app_desc = '''
 
 <<METADATA_TAG>>
 {
-        "name": "{{ SELF_CLASS_STD }}",
-        "description": "Operations with {{ SELF_CLASS_STD }}s",
+        "name": "{{ METADATA_TITLE }}",
+        "description": "{{ METADATA_DESC }}",
     },
-
     {{ METADATA_TAGS }}
 
 <<METADATA_ASSIGN_TAG>>

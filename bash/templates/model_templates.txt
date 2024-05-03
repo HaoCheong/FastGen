@@ -43,8 +43,8 @@ class {{ SELF_CLASS_STD }}{{ OTHER_CLASS_STD }}Association(Base):
     __tablename__ = '{{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_association'
 
     # Foreign Keys in Association table
-    {{ SELF_CLASS_CC }}_id = Column(ForeignKey('{{ SELF_CLASS_CC }}.id'), primary_key=True)
-    {{ OTHER_CLASS_CC }}_id = Column(ForeignKey('{{ OTHER_CLASS_CC }}.id'), primary_key=True)
+    {{ SELF_CLASS_CC }}_id = Column(ForeignKey('{{ SELF_TABLE_NAME }}.id'), primary_key=True)
+    {{ OTHER_CLASS_CC }}_id = Column(ForeignKey('{{ OTHER_TABLE_NAME }}.id'), primary_key=True)
 
 
 <<REL_MANY_TO_ONE>>
@@ -63,7 +63,7 @@ class {{ SELF_CLASS_STD }}{{ OTHER_CLASS_STD }}Association(Base):
 
 
 <<REL_ONE_TO_ONE>>
-{{ OTHER_CLASS_CC }}_id = Column(Integer, ForeignKey("{{ OTHER_CLASS_CC }}.id"))
+{{ OTHER_CLASS_CC }}_id = Column(Integer, ForeignKey("{{ OTHER_TABLE_NAME }}.id"))
     {{ OTHER_CLASS_CC }} = relationship("{{ OTHER_CLASS_STD }}", back_populates="{{ SELF_CLASS_CC }}", uselist=False)
 
     {{ RELATION }}

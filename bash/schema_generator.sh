@@ -37,7 +37,7 @@ function generate_schemas() {
                 filled_schema_column_str=$(echo "$schema_column_str" | sed -r "s/\{\{ COLUMN_NAME \}\}/$schema_col_name/g")
                 filled_schema_column_str=$(echo "$filled_schema_column_str" | sed 's/\\n/\\\\n/g')
                 pop_file=$(awk -v var="$filled_schema_column_str" '{gsub(/{{ SCHEMA_TYPES }}/, var); print}' $TEMP_TXT)
-        echo "$pop_file" > $TEMP_TXT
+                echo "$pop_file" > $TEMP_TXT
                 
 
             elif [[ $schema_col_type == 'int' ]]
@@ -48,7 +48,7 @@ function generate_schemas() {
                 filled_schema_column_int=$(echo "$schema_column_int" | sed -r "s/\{\{ COLUMN_NAME \}\}/$schema_col_name/g")
                 filled_schema_column_int=$(echo "$filled_schema_column_int" | sed 's/\\n/\\\\n/g')
                 pop_file=$(awk -v var="$filled_schema_column_int" '{gsub(/{{ SCHEMA_TYPES }}/, var); print}' $TEMP_TXT)
-        echo "$pop_file" > $TEMP_TXT
+                echo "$pop_file" > $TEMP_TXT
                 
 
             elif [[ $schema_col_type == 'json' ]]
@@ -112,7 +112,7 @@ function generate_schemas() {
             filled_schema_import_rel=$(echo "$schema_import_rel" | sed -r "s/\{\{ OTHER_CLASS_CC \}\}/$to_table_cc/g")
             filled_schema_import_rel=$(echo "$filled_schema_import_rel" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$to_table/g")
             pop_file=$(awk -v var="$filled_schema_import_rel\n" '{gsub(/{{ WR_IMPORTS }}/, var); print}' $TEMP_TXT)
-                echo "$pop_file" > $TEMP_TXT
+            echo "$pop_file" > $TEMP_TXT
             
 
             if [[ $table_rel == 'm2m' ]]
