@@ -84,7 +84,7 @@ def assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}(db: Session, {{ SELF_CLAS
     # Getting both instance of {{ SELF_CLASS_STD }} and {{ OTHER_CLASS_STD }}
     db_{{ SELF_CLASS_CC }} = db.query({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}).filter({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}.id == {{ SELF_CLASS_CC }}_id).first()
     db_{{ OTHER_CLASS_CC }} = db.query({{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}).filter(
-        {{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}.{{ OTHER_CLASS_CC }}_id == {{ OTHER_CLASS_CC }}_id).first()
+        {{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}.id == {{ OTHER_CLASS_CC }}_id).first()
 
     db_{{ OTHER_CLASS_CC }}.{{ SELF_CLASS_CC }}s.append(db_{{ SELF_CLASS_CC }})
 
@@ -100,7 +100,7 @@ def unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}(db: Session, {{ SELF_
     # Getting both instance of {{ SELF_CLASS_STD }} and {{ OTHER_CLASS_STD }}
     db_{{ SELF_CLASS_CC }} = db.query({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}).filter({{ SELF_CLASS_CC }}_models.{{ SELF_CLASS_STD }}.id == {{ SELF_CLASS_CC }}_id).first()
     db_{{ OTHER_CLASS_CC }} = db.query({{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}).filter(
-        {{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}.{{ OTHER_CLASS_CC }}_id == {{ OTHER_CLASS_CC }}_id).first()
+        {{ OTHER_CLASS_CC }}_models.{{ OTHER_CLASS_STD }}.id == {{ OTHER_CLASS_CC }}_id).first()
 
     db_{{ OTHER_CLASS_CC }}.{{ SELF_CLASS_CC }}s.remove(db_{{ SELF_CLASS_CC }})
 
