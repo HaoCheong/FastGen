@@ -72,7 +72,7 @@ function generate_endpoints() {
             if [[ $table_rel == 'm2m' ]]
             then
 
-                assign_m2m_endpoint_template=$(cat ./templates/endpoint_templates.txt | grep -e "<<ENDPOINT_ASSIGN_m2m>>" -A36 | tail -36)
+                assign_m2m_endpoint_template=$(cat ./templates/endpoint_templates.txt | grep -e "<<ENDPOINT_ASSIGN_m2m>>" -A33 | tail -33)
                 filled_assign_m2m_endpoint_template=$(echo "$assign_m2m_endpoint_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$endpoint_cc/g")
                 filled_assign_m2m_endpoint_template=$(echo "$filled_assign_m2m_endpoint_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$endpoint/g")
                 filled_assign_m2m_endpoint_template=$(echo "$filled_assign_m2m_endpoint_template" | sed -r "s/\{\{ OTHER_CLASS_CC \}\}/$to_table_cc/g")

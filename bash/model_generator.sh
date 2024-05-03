@@ -85,7 +85,7 @@ function generate_models() {
                 # Generate the self class m2m relation
                 model_m2m_rel=$(cat ./templates/model_templates.txt | grep -e "<<REL_MANY_TO_MANY>>" -A5 | tail -5)
                 filled_model_m2m_rel=$(echo "$model_m2m_rel" | sed -r "s/\{\{ OTHER_CLASS_CC \}\}/$to_table_cc/g")
-                filled_model_m2m_rel=$(echo "$filled_model_m2m_rel" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$model/g")
+                filled_model_m2m_rel=$(echo "$filled_model_m2m_rel" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$to_table/g")
                 filled_model_m2m_rel=$(echo "$filled_model_m2m_rel" | sed -r "s/\{\{ ASSOC_CLASS_CC \}\}/$assoc_table_name_lc/g")
                 filled_model_m2m_rel=$(echo "$filled_model_m2m_rel" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$model_cc/g")
                 filled_model_m2m_rel=$(echo "$filled_model_m2m_rel" | sed 's/\\n/\\\\n/g')

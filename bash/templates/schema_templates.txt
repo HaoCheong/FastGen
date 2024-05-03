@@ -78,7 +78,7 @@ from app.schemas.{{ OTHER_CLASS_CC }}_schemas import {{ OTHER_CLASS_STD }}ReadNR
 
 
 <<WR_SCHEMA_LIST>>
-{{ OTHER_CLASS_CC }}: List[{{ OTHER_CLASS_STD }}ReadNR]
+{{ OTHER_CLASS_CC }}s: List[{{ OTHER_CLASS_STD }}ReadNR]
     {{ WR_SCHEMAS }}
 
 
