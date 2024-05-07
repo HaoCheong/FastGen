@@ -52,11 +52,11 @@ function clean_template() {
 
 
 
-source model_generator.sh
-source schema_generator.sh
-source crud_generator.sh
-source endpoint_generator.sh
-source main_generator.sh
+source generators/model_generator.sh
+source generators/schema_generator.sh
+source generators/crud_generator.sh
+source generators/endpoint_generator.sh
+source generators/main_generator.sh
 
 # ========== Main ========== 
 # ERASE test project
