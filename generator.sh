@@ -77,10 +77,11 @@ generate_endpoints
 generate_main_files
 
 
-
 # CLEAN UP
 echo "======== CLEANING UP ========"
+autopep8 -i -r .
 rm $TEMP_TXT
+
 
 echo "======== COMPLETE ========"
 
