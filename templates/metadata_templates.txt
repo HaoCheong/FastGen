@@ -23,7 +23,7 @@ app_desc = '''
 
 <<METADATA_ASSIGN_TAG>>
 {
-        "name": "{{ SELF_CLASS_STD }} Assignments",
+        "name": "{{ METADATA_TITLE }} Assignments",
         "description": "Operations with {{ SELF_CLASS_STD }}s Assignments",
     },
 

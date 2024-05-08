@@ -8,6 +8,7 @@ function generate_endpoints() {
         endpoint_cc=$(echo "$endpoint" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
         file_name=./project/app/endpoints/"$endpoint_cc"_endpoints.py
         table_name=$(jq -r '.tables[] | select(.name == "'$endpoint'") | .tablename ' config.json)
+        meta_table_name=$(jq -r '.tables[] | select(.name == "'$endpoint'") | .metadata | .name ' config.json)
 
         endpoint_template=$(cat ./templates/endpoint_templates.txt | grep -e "<<ENDPOINT_BASE>>" -A12 | tail -12)
         echo "$endpoint_template" > $TEMP_TXT
@@ -18,6 +19,7 @@ function generate_endpoints() {
         endpoint_create_template=$(cat ./templates/endpoint_templates.txt | grep -e "<<ENDPOINT_CREATE>>" -A5 | tail -5)
         filled_endpoint_create_template=$(echo "$endpoint_create_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$endpoint_cc/g")
         filled_endpoint_create_template=$(echo "$filled_endpoint_create_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$endpoint/g")
+        filled_endpoint_create_template=$(echo "$filled_endpoint_create_template" | sed -r "s/\{\{ META_TABLE_NAME \}\}/$meta_table_name/g")
         pop_file=$(awk -v var="$filled_endpoint_create_template" '{gsub(/{{ ENDPOINT_INSERT }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
 
@@ -25,6 +27,7 @@ function generate_endpoints() {
         endpoint_get_all_template=$(cat ./templates/endpoint_templates.txt | grep -e "<<ENDPOINT_GET_ALL>>" -A6 | tail -6)
         filled_endpoint_get_all_template=$(echo "$endpoint_get_all_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$endpoint_cc/g")
         filled_endpoint_get_all_template=$(echo "$filled_endpoint_get_all_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$endpoint/g")
+        filled_endpoint_get_all_template=$(echo "$filled_endpoint_get_all_template" | sed -r "s/\{\{ META_TABLE_NAME \}\}/$meta_table_name/g")
         pop_file=$(awk -v var="$filled_endpoint_get_all_template" '{gsub(/{{ ENDPOINT_INSERT }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
 
@@ -32,6 +35,7 @@ function generate_endpoints() {
         endpoint_get_by_id_template=$(cat ./templates/endpoint_templates.txt | grep -e "<<ENDPOINT_GET_BY_ID>>" -A9 | tail -9)
         filled_endpoint_get_by_id_template=$(echo "$endpoint_get_by_id_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$endpoint_cc/g")
         filled_endpoint_get_by_id_template=$(echo "$filled_endpoint_get_by_id_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$endpoint/g")
+        filled_endpoint_get_by_id_template=$(echo "$filled_endpoint_get_by_id_template" | sed -r "s/\{\{ META_TABLE_NAME \}\}/$meta_table_name/g")
         pop_file=$(awk -v var="$filled_endpoint_get_by_id_template" '{gsub(/{{ ENDPOINT_INSERT }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
         
@@ -39,6 +43,7 @@ function generate_endpoints() {
         endpoint_update_template=$(cat ./templates/endpoint_templates.txt | grep -e "<<ENDPOINT_UPDATE>>" -A9 | tail -9)
         filled_endpoint_update_template=$(echo "$endpoint_update_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$endpoint_cc/g")
         filled_endpoint_update_template=$(echo "$filled_endpoint_update_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$endpoint/g")
+        filled_endpoint_update_template=$(echo "$filled_endpoint_update_template" | sed -r "s/\{\{ META_TABLE_NAME \}\}/$meta_table_name/g")
         pop_file=$(awk -v var="$filled_endpoint_update_template" '{gsub(/{{ ENDPOINT_INSERT }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
 
@@ -46,13 +51,14 @@ function generate_endpoints() {
         endpoint_delete_template=$(cat ./templates/endpoint_templates.txt | grep -e "<<ENDPOINT_DELETE>>" -A9 | tail -9)
         filled_endpoint_delete_template=$(echo "$endpoint_delete_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$endpoint_cc/g")
         filled_endpoint_delete_template=$(echo "$filled_endpoint_delete_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$endpoint/g")
+        filled_endpoint_delete_template=$(echo "$filled_endpoint_delete_template" | sed -r "s/\{\{ META_TABLE_NAME \}\}/$meta_table_name/g")
         pop_file=$(awk -v var="$filled_endpoint_delete_template" '{gsub(/{{ ENDPOINT_INSERT }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
 
         clean_template $TEMP_TXT
         cp $TEMP_TXT $file_name
 
-        # Generate the assignment files
+        # Generate the assignment filesk, just the one pass
         curr_endpoint_relations=$(jq -r ' .relationships[] | select(.table_1 == "'$endpoint'") | [.table_1, .table_2, .type] | join(",")' config.json)
         for relation in $curr_endpoint_relations
         do
@@ -77,6 +83,7 @@ function generate_endpoints() {
                 filled_assign_m2m_endpoint_template=$(echo "$filled_assign_m2m_endpoint_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$endpoint/g")
                 filled_assign_m2m_endpoint_template=$(echo "$filled_assign_m2m_endpoint_template" | sed -r "s/\{\{ OTHER_CLASS_CC \}\}/$to_table_cc/g")
                 filled_assign_m2m_endpoint_template=$(echo "$filled_assign_m2m_endpoint_template" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$to_table/g")
+                filled_assign_m2m_endpoint_template=$(echo "$filled_assign_m2m_endpoint_template" | sed -r "s/\{\{ META_TABLE_NAME \}\}/$meta_table_name/g")
                 pop_file=$(awk -v var="$filled_assign_m2m_endpoint_template" '{gsub(/{{ ENDPOINT_ASSIGN_INSERT }}/, var); print}' $TEMP_TXT)
                 echo "$pop_file" > $TEMP_TXT
 
@@ -88,6 +95,7 @@ function generate_endpoints() {
                 filled_assign_m2o_endpoint_template=$(echo "$filled_assign_m2o_endpoint_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$endpoint/g")
                 filled_assign_m2o_endpoint_template=$(echo "$filled_assign_m2o_endpoint_template" | sed -r "s/\{\{ OTHER_CLASS_CC \}\}/$to_table_cc/g")
                 filled_assign_m2o_endpoint_template=$(echo "$filled_assign_m2o_endpoint_template" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$to_table/g")
+                filled_assign_m2o_endpoint_template=$(echo "$filled_assign_m2o_endpoint_template" | sed -r "s/\{\{ META_TABLE_NAME \}\}/$meta_table_name/g")
                 pop_file=$(awk -v var="$filled_assign_m2o_endpoint_template" '{gsub(/{{ ENDPOINT_ASSIGN_INSERT }}/, var); print}' $TEMP_TXT)
                 echo "$pop_file" > $TEMP_TXT
 
@@ -99,6 +107,7 @@ function generate_endpoints() {
                 filled_assign_o2o_endpoint_template=$(echo "$filled_assign_o2o_endpoint_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$endpoint/g")
                 filled_assign_o2o_endpoint_template=$(echo "$filled_assign_o2o_endpoint_template" | sed -r "s/\{\{ OTHER_CLASS_CC \}\}/$to_table_cc/g")
                 filled_assign_o2o_endpoint_template=$(echo "$filled_assign_o2o_endpoint_template" | sed -r "s/\{\{ OTHER_CLASS_STD \}\}/$to_table/g")
+                filled_assign_o2o_endpoint_template=$(echo "$filled_assign_o2o_endpoint_template" | sed -r "s/\{\{ META_TABLE_NAME \}\}/$meta_table_name/g")
                 pop_file=$(awk -v var="$filled_assign_o2o_endpoint_template" '{gsub(/{{ ENDPOINT_ASSIGN_INSERT }}/, var); print}' $TEMP_TXT)
                 echo "$pop_file" > $TEMP_TXT
 

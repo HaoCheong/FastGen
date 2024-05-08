@@ -1,435 +1,130 @@
 {
 	"project": {
-		"name": "Prestart Check",
-		"desc": "Project for FastAPI to Prestart Check",
+		"name": "Pets FastAPI",
+		"desc": "Project for FastAPI to test",
 		"version": "0.0.1",
-		"database_name": "prestart"
+		"database_name": "pets"
 	},
 	"tables": [
 		{ 
-			"name": "Response",
-			"tablename": "responses",
+			"name": "Pet",
+			"tablename": "pets",
 			"metadata": {
-				"name": "Response",
-				"desc": "Operations with response table"
+				"name": "Pets",
+				"desc": "Operations with Pets"
 			},
 			"columns": [
 				{ 
-					"column_name": "question_sequence",
+					"column_name": "name",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "age",
 					"column_type": "int"
-				},
-                { 
-					"column_name": "answer_reviewed",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "cleared_at",
-					"column_type": "datetime"
-				},
-                { 
-					"column_name": "deleted",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "created_at",
-					"column_type": "datetime"
-				},
-                { 
-					"column_name": "updated_at",
-					"column_type": "datetime"
 				}
 			]
 		},
-        { 
-			"name": "ResponseTypeMCQ",
-			"tablename": "response_type_mcq",
+		{ 
+			"name": "Owner",
+			"tablename": "owners",
 			"metadata": {
-				"name": "ResponseTypeMCQ",
-				"desc": "Operation related to multiple choice response type"
+				"name": "Owners",
+				"desc": "Operations with Pets Owners"
 			},
 			"columns": [
 				{ 
-					"column_name": "choice_text",
+					"column_name": "name",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "email",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "address",
+					"column_type": "str"
+				},
+				{ 
+					"column_name": "password",
 					"column_type": "str"
 				}
 			]
 		},
-        { 
-			"name": "ResponseTypeOptions",
-			"tablename": "response_type_options",
+		{ 
+			"name": "Trainer",
+			"tablename": "trainers",
 			"metadata": {
-				"name": "ResponseTypeOptions",
-				"desc": "Operation related to option selection response type"
+				"name": "Pet Trainers",
+				"desc": "Operations with Pets Trainers"
 			},
 			"columns": [
 				{ 
-					"column_name": "image_blob",
+					"column_name": "name",
 					"column_type": "str"
 				},
-                { 
-					"column_name": "option_text",
-					"column_type": "str"
-				}
-			]
-		},
-        { 
-			"name": "ResponseTypeYesNo",
-			"tablename": "response_type_yes_no",
-			"metadata": {
-				"name": "ResponseTypeYesNo",
-				"desc": "Operation related to yes no response type"
-			},
-			"columns": [
 				{ 
-					"column_name": "question_title",
+					"column_name": "trainer_id",
 					"column_type": "str"
 				},
-                { 
-					"column_name": "user_answer",
-					"column_type": "str"
-				}
-			]
-		},
-        { 
-			"name": "ResponseTypeAcknowledgement",
-			"tablename": "response_type_acknowledgement",
-			"metadata": {
-				"name": "ResponseTypeAcknowledgement",
-				"desc": "Operation related to acknowledgement response type"
-			},
-			"columns": []
-		},
-        { 
-			"name": "Question",
-			"tablename": "questions",
-			"metadata": {
-				"name": "Question",
-				"desc": "Operations related to questions"
-			},
-			"columns": [
 				{ 
-					"column_name": "question_number",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "allow_machine_op",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "time_out",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "enabled",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "is_critical",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "sequence",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "randomise",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "question_title",
+					"column_name": "desc",
 					"column_type": "str"
 				},
-                { 
-					"column_name": "question_desc",
-					"column_type": "str"
-				},
-                { 
-					"column_name": "deleted",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "created_at",
-					"column_type": "datetime"
-				},
-                { 
-					"column_name": "updated_at",
-					"column_type": "datetime"
-				}
-
-			]
-		},
-        { 
-			"name": "QuestionTypeMCQ",
-			"tablename": "question_type_mcq",
-			"metadata": {
-				"name": "QuestionTypeMCQ",
-				"desc": "Operations on question that are of multiple choice question type"
-			},
-			"columns": [
 				{ 
-					"column_name": "expected_answer",
+					"column_name": "phone_no",
 					"column_type": "str"
-				}
-			]
-		},
-        { 
-			"name": "Choice",
-			"tablename": "choices",
-			"metadata": {
-				"name": "Choice",
-				"desc": "Operations on Choices, dependant on QuestionTypeMCQ"
-			},
-			"columns": [
+				},
 				{ 
-					"column_name": "choice_text",
+					"column_name": "email",
 					"column_type": "str"
-				}
-			]
-		},
-        { 
-			"name": "QuestionTypeOption",
-			"tablename": "question_type_options",
-			"metadata": {
-				"name": "QuestionTypeOption",
-				"desc": "Operations on question that are of the option question type"
-			},
-			"columns": []
-		},
-        { 
-			"name": "Option",
-			"tablename": "options",
-			"metadata": {
-				"name": "Option",
-				"desc": "Operation on Options, dependant on QuestionTypeOptions"
-			},
-			"columns": [
+				},
 				{ 
-					"column_name": "image_blob",
-					"column_type": "str"
-				},
-                { 
-					"column_name": "option_text",
-					"column_type": "str"
-				}
-			]
-		},
-        { 
-			"name": "QuestionTypeYesNo",
-			"tablename": "question_type_yes_no",
-			"metadata": {
-				"name": "QuestionTypeYesNo",
-				"desc": "Operations on question that are of the Yes No Question type"
-			},
-			"columns": [
-				{ 
-					"column_name": "pos_question_title",
-					"column_type": "str"
-				},
-                { 
-					"column_name": "pos_expected_answer",
-					"column_type": "str"
-				},
-                { 
-					"column_name": "neg_question_title",
-					"column_type": "str"
-				},
-                { 
-					"column_name": "neg_expected_answer",
-					"column_type": "str"
-				}
-			]
-		},
-        { 
-			"name": "QuestionTypeAcknowledgement",
-			"tablename": "question_type_acknowledgement",
-			"metadata": {
-				"name": "QuestionTypeAcknowledgement",
-				"desc": "Operations on question that are of the Acknowledgement type"
-			},
-			"columns": [
-				{ 
-					"column_name": "acknowledgement_text",
-					"column_type": "str"
-				}
-			]
-		},
-        { 
-			"name": "Section",
-			"tablename": "sections",
-			"metadata": {
-				"name": "Section",
-				"desc": "Operations related to question section"
-			},
-			"columns": [
-				{ 
-					"column_name": "title",
-					"column_type": "str"
-				},
-                { 
-					"column_name": "description",
-					"column_type": "str"
-				},
-                { 
-					"column_name": "show_cover_page",
-					"column_type": "str"
-				},
-                { 
-					"column_name": "sequence",
-					"column_type": "str"
-				},
-                { 
-					"column_name": "random_questions",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "deleted",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "created_at",
-					"column_type": "datetime"
-				},
-                { 
-					"column_name": "updated_at",
-					"column_type": "datetime"
-				}
-                
-			]
-		},
-        { 
-			"name": "Session",
-			"tablename": "sessions",
-			"metadata": {
-				"name": "Session",
-				"desc": "Operation related to session"
-			},
-			"columns": [
-				{ 
-					"column_name": "logout_time",
-					"column_type": "datetime"
-				},
-                { 
-					"column_name": "deleted",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "created_at",
-					"column_type": "datetime"
-				},
-                { 
-					"column_name": "updated_at",
+					"column_name": "date_joined",
 					"column_type": "datetime"
 				}
 			]
 		},
-        { 
-			"name": "User",
-			"tablename": "users",
+		{ 
+			"name": "NutritionPlan",
+			"tablename": "nutrition_plans",
 			"metadata": {
-				"name": "User",
-				"desc": "Operation related to user"
+				"name": "Nutrition Plans",
+				"desc": "Operations with Pets Nutrition Plan"
 			},
 			"columns": [
 				{ 
-					"column_name": "first_name",
+					"column_name": "name",
 					"column_type": "str"
 				},
-                { 
-					"column_name": "last_name",
-					"column_type": "str"
-				},
-                { 
-					"column_name": "pin",
-					"column_type": "str"
-				},
-                { 
-					"column_name": "enabled",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "last_login",
-					"column_type": "datetime"
-				},
-                { 
-					"column_name": "deleted",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "created_at",
-					"column_type": "datetime"
-				},
-                { 
-					"column_name": "updated_at",
-					"column_type": "datetime"
-				}
-			]
-		},
-        { 
-			"name": "Branch",
-			"tablename": "branches",
-			"metadata": {
-				"name": "Branch",
-				"desc": "Operation related to branch"
-			},
-			"columns": [
 				{ 
-					"column_name": "branch_name",
+					"column_name": "desc",
 					"column_type": "str"
 				},
-                { 
-					"column_name": "deleted",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "created_at",
-					"column_type": "datetime"
-				},
-                { 
-					"column_name": "updated_at",
-					"column_type": "datetime"
-				}
-			]
-		},
-        { 
-			"name": "Machine",
-			"tablename": "machines",
-			"metadata": {
-				"name": "Machine",
-				"desc": "Operation related to machines"
-			},
-			"columns": [
 				{ 
-					"column_name": "machine_name",
+					"column_name": "meal_plan",
 					"column_type": "str"
-				},
-                { 
-					"column_name": "deleted",
-					"column_type": "int"
-				},
-                { 
-					"column_name": "created_at",
+				},{ 
+					"column_name": "date_added",
 					"column_type": "datetime"
-				},
-                { 
-					"column_name": "updated_at",
-					"column_type": "datetime"
-				}
-			]
-		},
-        { 
-			"name": "MachineType",
-			"tablename": "machine_types",
-			"metadata": {
-				"name": "MachineType",
-				"desc": "Operation related to machine type, dependant on Machine"
-			},
-			"columns": [
-				{ 
-					"column_name": "label",
-					"column_type": "str"
 				}
 			]
 		}
-    ],
-    "relationships": []
+	],
+	"relationships": [
+		{
+			"table_1": "Pet",
+			"table_2": "Owner",
+			"type": "m2o"
+		},
+		{
+			"table_1": "Pet",
+			"table_2": "Trainer",
+			"type": "m2m"
+		},
+		{
+			"table_1": "Pet",
+			"table_2": "NutritionPlan",
+			"type": "o2o"
+		}
+	]
 }
