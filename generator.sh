@@ -50,7 +50,39 @@ function clean_template() {
     sed -i -e ':a;N;$!ba;s/\n\n\n/\n/g' $1
 }
 
+function validate_rel() {
+    # Check if all the fields in relationships are valid table name
+    rel_tables=$(jq -r ' .relationships[] | [.table_1, .table_2] | join("\n") ' config.json | sort | uniq)
+    all_tables=$(jq -r ' .tables[] | .name' config.json)
+    if grep -qvxF "$(printf '%s\n' "${all_tables[@]}")" <<< "$rel_tables"
+    then
+        echo "ERROR: Table in relationship does not have existing model"
+        exit
+    fi
 
+    # Check if all the rels are valid (m2m, o2o, m2o)
+    for rel in $(jq -r ' .relationships[] | .type ' config.json | sort | uniq)
+    do
+        if [[ $rel != 'm2m' ]] && [[ $rel != 'm2o' ]] && [[ $rel != 'o2o' ]]
+        then
+            echo "ERROR: Unknown relations ship. Only allow m2m, m2o, and o2o"
+            echo "$rel"
+            exit
+        fi
+    done
+
+    # Check if there are repeated rels
+    dup_rel=$(jq -r ' .relationships[] | [.table_1, .table_2, .type] | join(",")' config.json | uniq -d)
+    if [[ ! -z $dup_rel ]]
+    then
+        echo "ERROR: Duplicate relations detected"
+        echo "$dup_rel"
+        exit
+    fi
+
+    echo "Success"
+    exit
+}
 
 source generators/model_generator.sh
 source generators/schema_generator.sh
@@ -64,6 +96,10 @@ if [[ "$1" == "erase" ]]; then
     rimraf ./project
     exit
 fi
+
+# DATA VALIDATION
+validate_rel
+
 
 # BASE GEN
 generate_base_directories
