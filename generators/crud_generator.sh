@@ -3,12 +3,12 @@ function generate_cruds() {
     
     echo "======== GENERATE CRUD FILES ========"
     
-    for crud in $(jq -r '.tables[] | .name ' config.json)
+    for crud in $(jq -r '.tables[] | .name ' $CONFIG_NAME)
     do
         echo "> Generating CRUDs for $crud"
         crud_cc=$(echo "$crud" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
-        file_name=./project/app/cruds/"$crud_cc"_cruds.py
-        table_name=$(jq -r '.tables[] | select(.name == "'$crud'") | .tablename ' config.json)
+        file_name=./$PROJECT_NAME/app/cruds/"$crud_cc"_cruds.py
+        table_name=$(jq -r '.tables[] | select(.name == "'$crud'") | .tablename ' $CONFIG_NAME)
 
         crud_template=$(cat ./templates/crud_templates.txt | grep -e "<<CRUD_BASE>>" -A5 | tail -5)
         echo "$crud_template" > $TEMP_TXT
@@ -22,7 +22,7 @@ function generate_cruds() {
         pop_file=$(awk -v var="$filled_crud_base_template" '{gsub(/{{ CRUDS }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
 
-        crud_cols=$(jq -r ' .tables[] | select(.name == "'$crud'") | .columns[] | [.column_name, .column_type] | join(",") ' config.json)
+        crud_cols=$(jq -r ' .tables[] | select(.name == "'$crud'") | .columns[] | [.column_name, .column_type] | join(",") ' $CONFIG_NAME)
         for col in $crud_cols
         do
 
@@ -70,13 +70,13 @@ function generate_cruds() {
         cp $TEMP_TXT $file_name
 
         # Generate the assignment files (Only one relationship pass)
-        curr_crud_relations=$(jq -r ' .relationships[] | select(.table_1 == "'$crud'") | [.table_1, .table_2, .type] | join(",")' config.json)
+        curr_crud_relations=$(jq -r ' .relationships[] | select(.table_1 == "'$crud'") | [.table_1, .table_2, .type] | join(",")' $CONFIG_NAME)
         for relation in $curr_crud_relations
         do
             
             to_table=$(echo $relation | cut -d"," -f2)
             to_table_cc=$(echo "$to_table" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
-            assign_file_name=./project/app/cruds/"$crud_cc"_"$to_table_cc"_assign.py
+            assign_file_name=./$PROJECT_NAME/app/cruds/"$crud_cc"_"$to_table_cc"_assign.py
             table_rel=$(echo $relation | cut -d"," -f3)
 
             echo ">> Generating Assignments Operations for $to_table"

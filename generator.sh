@@ -8,17 +8,17 @@ TEMP_TXT=/dev/shm/temp.txt
 function generate_base_directories() {
     echo "======== GENERATE BASE DIRECTORIES ========"
 
-    mkdir ./project
-    mkdir ./project/app
-    mkdir ./project/app/models
-    mkdir ./project/app/cruds
-    mkdir ./project/app/schemas
-    mkdir ./project/app/endpoints
-    mkdir ./project/app/db
+    mkdir ./$PROJECT_NAME
+    mkdir ./$PROJECT_NAME/app
+    mkdir ./$PROJECT_NAME/app/models
+    mkdir ./$PROJECT_NAME/app/cruds
+    mkdir ./$PROJECT_NAME/app/schemas
+    mkdir ./$PROJECT_NAME/app/endpoints
+    mkdir ./$PROJECT_NAME/app/db
 
-    mkdir ./project/tests
-    mkdir ./project/tests/unit
-    mkdir ./project/tests/populate
+    mkdir ./$PROJECT_NAME/tests
+    mkdir ./$PROJECT_NAME/tests/unit
+    mkdir ./$PROJECT_NAME/tests/populate
 }
 
 
@@ -28,13 +28,13 @@ function generate_base_files() {
     echo "======== GENERATE BASE FILES ========"
 
     # Generate init files
-    touch ./project/app/__init__.py
-    touch ./project/app/models/__init__.py
-    touch ./project/app/cruds/__init__.py
-    touch ./project/app/schemas/__init__.py
-    touch ./project/app/endpoints/__init__.py
+    touch ./$PROJECT_NAME/app/__init__.py
+    touch ./$PROJECT_NAME/app/models/__init__.py
+    touch ./$PROJECT_NAME/app/cruds/__init__.py
+    touch ./$PROJECT_NAME/app/schemas/__init__.py
+    touch ./$PROJECT_NAME/app/endpoints/__init__.py
 
-    touch ./project/tests/unit/__init__.py
+    touch ./$PROJECT_NAME/tests/unit/__init__.py
 
     
 }
@@ -80,8 +80,6 @@ function validate_rel() {
         exit
     fi
 
-    echo "Success"
-    exit
 }
 
 source generators/model_generator.sh
@@ -90,16 +88,45 @@ source generators/crud_generator.sh
 source generators/endpoint_generator.sh
 source generators/main_generator.sh
 
-# ========== Main ========== 
-# ERASE test project
-if [[ "$1" == "erase" ]]; then
-    rimraf ./project
-    exit
-fi
+# OPTION HANDLING
+OPTIND=1
+OPTIONS="p:c:E:h"
+
+CONFIG_NAME=""
+PROJECT_NAME=""
+
+while getopts "$OPTIONS" opt; do
+    case $opt in
+        c) # Pass in the config file required
+            echo $OPTARG
+            CONFIG_NAME=$OPTARG
+            ;;
+        p) # Specifies name of the $PROJECT_NAME 
+            echo $OPTARG
+            PROJECT_NAME=$OPTARG
+            ;;
+        E) # Completely deletes the specific $PROJECT_NAME
+            echo Deleting \"$OPTARG\" 
+            rimraf ./$OPTARG
+            exit 1
+            ;;
+        h) # Completely deletes the specific $PROJECT_NAME
+            echo "USAGE: fastGen -p <$PROJECT_NAME-name> -c <config-file>"
+            echo "USAGE: fastGen -E <$PROJECT_NAME-name-to-delete>"
+            exit 1
+            ;;
+        \?) # Invalid option was specified
+            echo "USAGE: fastGen -p <$PROJECT_NAME-name> -c <config-file>"
+            echo "USAGE: fastGen -E <$PROJECT_NAME-name-to-delete>"
+            exit 1
+            ;;
+    esac
+done
+
+shift "$((OPTIND-1))"
 
 # DATA VALIDATION
 validate_rel
-
 
 # BASE GEN
 generate_base_directories

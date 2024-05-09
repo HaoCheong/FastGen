@@ -1,21 +1,21 @@
 # Generate remaining files
 function generate_main_files() {
 
-    proj_data=$(jq -r ' .project | [.name, .desc, .version, .database_name] | join("|")' config.json)
+    proj_data=$(jq -r ' .project | [.name, .desc, .version, .database_name] | join("|")' $CONFIG_NAME)
     name=$(echo "$proj_data" | cut -d"|" -f1)
     desc=$(echo "$proj_data" | cut -d"|" -f2)
     version=$(echo "$proj_data" | cut -d"|" -f3)
     database_name=$(echo "$proj_data" | cut -d"|" -f4)
 
     # Generate Database
-    file_name="./project/app/database.py"
+    file_name="./$PROJECT_NAME/app/database.py"
     database_template=$(cat ./templates/database_templates.txt | grep -e "<<DATABASE_BASE>>" -A16 | tail -16)
     filled_database_template=$(echo "$database_template" | sed -r "s/\{\{ DATABASE_NAME \}\}/$database_name/g")
     echo "$filled_database_template" > $TEMP_TXT
     cp $TEMP_TXT $file_name
 
     # Generate Metadata
-    file_name="./project/app/metadata.py"
+    file_name="./$PROJECT_NAME/app/metadata.py"
     metadata_template=$(cat ./templates/metadata_templates.txt | grep -e "<<METADATA_BASE>>" -A15 | tail -15)
     filled_metadata_template=$(echo "$metadata_template" | sed -r "s/\{\{ PROJECT_TITLE \}\}/$name/g")
     filled_metadata_template=$(echo "$filled_metadata_template" | sed -r "s/\{\{ PROJECT_VERS \}\}/$version/g")
@@ -23,7 +23,7 @@ function generate_main_files() {
     echo "$filled_metadata_template" > $TEMP_TXT
 
     IFS=$'\n'
-    for metadata in $(jq -r '.tables[] | .metadata | [.name, .desc] | join("|")' config.json)
+    for metadata in $(jq -r '.tables[] | .metadata | [.name, .desc] | join("|")' $CONFIG_NAME)
     do
         title=$(echo "$metadata" | cut -d"|" -f1)
         desc=$(echo "$metadata" | cut -d"|" -f2-)
@@ -36,9 +36,9 @@ function generate_main_files() {
         echo "$pop_file" > $TEMP_TXT
     done
 
-    for metadata_assign in $(jq -r ' .relationships[] | .table_1 ' config.json | sort | uniq)
+    for metadata_assign in $(jq -r ' .relationships[] | .table_1 ' $CONFIG_NAME | sort | uniq)
     do
-        meta_title=$(jq -r '.tables[] | select(.name == "'$metadata_assign'") | .metadata | .name ' config.json)
+        meta_title=$(jq -r '.tables[] | select(.name == "'$metadata_assign'") | .metadata | .name ' $CONFIG_NAME)
 
         metadata_assign_tag_template=$(cat ./templates/metadata_templates.txt | grep -e "<<METADATA_ASSIGN_TAG>>" -A6 | tail -6)
         filled_metadata_assign_tag_template=$(echo "$metadata_assign_tag_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$metadata_assign/g")
@@ -52,11 +52,11 @@ function generate_main_files() {
     cp $TEMP_TXT $file_name
 
     # Generate Main
-    file_name="./project/app/main.py"
+    file_name="./$PROJECT_NAME/app/main.py"
     main_template=$(cat ./templates/main_templates.txt | grep -e "<<MAIN_BASE>>" -A39 | tail -39)
     echo "$main_template" > $TEMP_TXT
 
-    for table in $(jq -r ' .tables[] | .name ' config.json)
+    for table in $(jq -r ' .tables[] | .name ' $CONFIG_NAME)
     do
         table_cc=$(echo "$table" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
         
@@ -74,7 +74,7 @@ function generate_main_files() {
 
     done
 
-    for relation in $(jq -r ' .relationships[] | [.table_1, .table_2, .type] | join("|")' config.json)
+    for relation in $(jq -r ' .relationships[] | [.table_1, .table_2, .type] | join("|")' $CONFIG_NAME)
     do
 
         from_table=$(echo "$relation" | cut -d"|" -f1)
@@ -104,7 +104,7 @@ function generate_main_files() {
     cp $TEMP_TXT $file_name
 
     # Generate Helper
-    cp ./templates/helpers_templates.txt ./project/app/helpers.py
+    cp ./templates/helpers_templates.txt ./$PROJECT_NAME/app/helpers.py
 
-    cp ./templates/requirements_template.txt ./project/requirements.txt
+    cp ./templates/requirements_template.txt ./$PROJECT_NAME/requirements.txt
 }

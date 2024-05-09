@@ -2,14 +2,14 @@ function generate_schemas() {
     echo "======== GENERATE SCHEMA FILES ========"
 
     # For every instance of schemas files
-    for schema in $(jq -r '.tables[] | .name ' config.json)
+    for schema in $(jq -r '.tables[] | .name ' $CONFIG_NAME)
     do
 
         # Generating base file
         echo "> Generating schema for $schema"
         schema_cc=$(echo "$schema" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
-        file_name=./project/app/schemas/"$schema_cc"_schemas.py
-        table_name=$(jq -r '.tables[] | select(.name == "'$schema'") | .tablename ' config.json)
+        file_name=./$PROJECT_NAME/app/schemas/"$schema_cc"_schemas.py
+        table_name=$(jq -r '.tables[] | select(.name == "'$schema'") | .tablename ' $CONFIG_NAME)
 
         schema_template=$(cat ./templates/schema_templates.txt | grep -e "<<SCHEMA_BASE>>" -A7 | tail -7)
         filled_schema_template=$(echo "$schema_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$schema/g")
@@ -22,7 +22,7 @@ function generate_schemas() {
         echo "$pop_file" > $TEMP_TXT
         
         
-        schema_cols=$(jq -r ' .tables[] | select(.name == "'$schema'") | .columns[] | [.column_name, .column_type] | join(",") ' config.json)
+        schema_cols=$(jq -r ' .tables[] | select(.name == "'$schema'") | .columns[] | [.column_name, .column_type] | join(",") ' $CONFIG_NAME)
         for cols in $schema_cols
         do
 
@@ -101,7 +101,7 @@ function generate_schemas() {
         
         # Relationship pass 1: To -> From
 
-        curr_model_relations=$(jq -r ' .relationships[] | select(.table_1 == "'$schema'") | [.table_1, .table_2, .type] | join(",")' config.json)
+        curr_model_relations=$(jq -r ' .relationships[] | select(.table_1 == "'$schema'") | [.table_1, .table_2, .type] | join(",")' $CONFIG_NAME)
         for relation in $curr_model_relations
         do
             to_table=$(echo $relation | cut -d"," -f2)
@@ -154,7 +154,7 @@ function generate_schemas() {
         done
 
         # Relationship pass 2: From -> To
-        curr_model_relations=$(jq -r ' .relationships[] | select(.table_2 == "'$schema'") | [.table_2, .table_1, .type] | join(",")' config.json)
+        curr_model_relations=$(jq -r ' .relationships[] | select(.table_2 == "'$schema'") | [.table_2, .table_1, .type] | join(",")' $CONFIG_NAME)
         for relation in $curr_model_relations
         do
             from_table=$(echo $relation | cut -d"," -f2)

@@ -3,12 +3,12 @@ function generate_models() {
     echo "======== GENERATE MODELS FILES ========"
 
     # For every instance
-    for model in $(jq -r '.tables[] | .name ' config.json)
+    for model in $(jq -r '.tables[] | .name ' $CONFIG_NAME)
     do
         echo "> Generating model for $model"
         model_cc=$(echo "$model" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
-        file_name=./project/app/models/"$model_cc"_model.py
-        table_name=$(jq -r '.tables[] | select(.name == "'$model'") | .tablename ' config.json)
+        file_name=./$PROJECT_NAME/app/models/"$model_cc"_model.py
+        table_name=$(jq -r '.tables[] | select(.name == "'$model'") | .tablename ' $CONFIG_NAME)
 
         # Create default template
         model_template=$(cat ./templates/model_templates.txt | grep -e "<<MODEL_BASE>>" -A16 | tail -16)
@@ -19,7 +19,7 @@ function generate_models() {
         sed -r -i "s/\{\{ TABLE_NAME \}\}/$table_name/g" $TEMP_TXT
 
         # Create get all the column
-        model_cols=$(jq -r ' .tables[] | select(.name == "'$model'") | .columns[] | [.column_name, .column_type] | join(",") ' config.json)
+        model_cols=$(jq -r ' .tables[] | select(.name == "'$model'") | .columns[] | [.column_name, .column_type] | join(",") ' $CONFIG_NAME)
         for cols in $model_cols
         do
             # echo $cols
@@ -69,12 +69,12 @@ function generate_models() {
         done
 
         # Relationship first pass - Get all the table_1 of the current table being created
-        curr_model_relations=$(jq -r ' .relationships[] | select(.table_1 == "'$model'") | [.table_1, .table_2, .type] | join(",")' config.json)
+        curr_model_relations=$(jq -r ' .relationships[] | select(.table_1 == "'$model'") | [.table_1, .table_2, .type] | join(",")' $CONFIG_NAME)
         for relation in $curr_model_relations
         do
             to_table=$(echo $relation | cut -d"," -f2)
             to_table_cc=$(echo "$to_table" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
-            to_table_name=$(jq -r ' .tables[] | select(.name == "'$to_table'") | .tablename' config.json)
+            to_table_name=$(jq -r ' .tables[] | select(.name == "'$to_table'") | .tablename' $CONFIG_NAME)
             table_rel=$(echo $relation | cut -d"," -f3)
 
             if [[ $table_rel == 'm2m' ]]
@@ -141,7 +141,7 @@ function generate_models() {
         done
 
         # Relationship second pass - Get all the table_2 of the current table being created
-        curr_model_relations=$(jq -r ' .relationships[] | select(.table_2 == "'$model'") | [.table_2, .table_1, .type] | join(",")' config.json)
+        curr_model_relations=$(jq -r ' .relationships[] | select(.table_2 == "'$model'") | [.table_2, .table_1, .type] | join(",")' $CONFIG_NAME)
         for relation in $curr_model_relations
         do
             from_table=$(echo $relation | cut -d"," -f2)

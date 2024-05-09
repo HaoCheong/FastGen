@@ -2,13 +2,13 @@ function generate_endpoints() {
     
     echo "======== GENERATE CRUD FILES ========"
     
-    for endpoint in $(jq -r '.tables[] | .name ' config.json)
+    for endpoint in $(jq -r '.tables[] | .name ' $CONFIG_NAME)
     do
         echo "> Generating Endpoints for $endpoint"
         endpoint_cc=$(echo "$endpoint" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
-        file_name=./project/app/endpoints/"$endpoint_cc"_endpoints.py
-        table_name=$(jq -r '.tables[] | select(.name == "'$endpoint'") | .tablename ' config.json)
-        meta_table_name=$(jq -r '.tables[] | select(.name == "'$endpoint'") | .metadata | .name ' config.json)
+        file_name=./$PROJECT_NAME/app/endpoints/"$endpoint_cc"_endpoints.py
+        table_name=$(jq -r '.tables[] | select(.name == "'$endpoint'") | .tablename ' $CONFIG_NAME)
+        meta_table_name=$(jq -r '.tables[] | select(.name == "'$endpoint'") | .metadata | .name ' $CONFIG_NAME)
 
         endpoint_template=$(cat ./templates/endpoint_templates.txt | grep -e "<<ENDPOINT_BASE>>" -A12 | tail -12)
         echo "$endpoint_template" > $TEMP_TXT
@@ -59,13 +59,13 @@ function generate_endpoints() {
         cp $TEMP_TXT $file_name
 
         # Generate the assignment filesk, just the one pass
-        curr_endpoint_relations=$(jq -r ' .relationships[] | select(.table_1 == "'$endpoint'") | [.table_1, .table_2, .type] | join(",")' config.json)
+        curr_endpoint_relations=$(jq -r ' .relationships[] | select(.table_1 == "'$endpoint'") | [.table_1, .table_2, .type] | join(",")' $CONFIG_NAME)
         for relation in $curr_endpoint_relations
         do
             
             to_table=$(echo $relation | cut -d"," -f2)
             to_table_cc=$(echo "$to_table" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
-            assign_file_name=./project/app/endpoints/"$endpoint_cc"_"$to_table_cc"_assign_endpoints.py
+            assign_file_name=./$PROJECT_NAME/app/endpoints/"$endpoint_cc"_"$to_table_cc"_assign_endpoints.py
             table_rel=$(echo $relation | cut -d"," -f3)
 
             echo ">> Generating Assignments Endpoints for $to_table"
