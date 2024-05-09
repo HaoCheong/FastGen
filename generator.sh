@@ -111,13 +111,13 @@ while getopts "$OPTIONS" opt; do
             exit 1
             ;;
         h) # Completely deletes the specific $PROJECT_NAME
-            echo "USAGE: fastGen -p <$PROJECT_NAME-name> -c <config-file>"
-            echo "USAGE: fastGen -E <$PROJECT_NAME-name-to-delete>"
+            echo "USAGE: fastGen -p <project-name> -c <config-file>"
+            echo "USAGE: fastGen -E <project-name-to-delete>"
             exit 1
             ;;
         \?) # Invalid option was specified
-            echo "USAGE: fastGen -p <$PROJECT_NAME-name> -c <config-file>"
-            echo "USAGE: fastGen -E <$PROJECT_NAME-name-to-delete>"
+            echo "USAGE: fastGen -p <project-name> -c <config-file>"
+            echo "USAGE: fastGen -E <project-name-to-delete>"
             exit 1
             ;;
     esac
