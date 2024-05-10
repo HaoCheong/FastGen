@@ -7,6 +7,7 @@ source generators/schema_generator.sh
 source generators/crud_generator.sh
 source generators/endpoint_generator.sh
 source generators/main_generator.sh
+source generators/test_generator.sh
 
 TEMP_TXT=/dev/shm/temp.txt
 
@@ -44,7 +45,6 @@ while getopts "$OPTIONS" opt; do
             ;;
     esac
 done
-
 shift "$((OPTIND-1))"
 
 # DATA VALIDATION
@@ -64,6 +64,7 @@ generate_endpoints
 generate_main_files
 
 # TEST GENERATORS
+generate_unit_tests
 
 # CLEAN UP
 echo "======== CLEANING UP ========"

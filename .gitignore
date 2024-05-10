@@ -178,4 +178,5 @@ pyrightconfig.json
 app/
 temp.txt
 project/
+test_proj/
 prestart_config.json

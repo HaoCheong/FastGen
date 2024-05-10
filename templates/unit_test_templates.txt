@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 import pytest
 from app.helpers import get_db
 from app.main import app
-import app.test_data as td
+import tests.unit.test_data as td
 
 import pathlib
  
@@ -53,7 +53,9 @@ def reset_db():
 
 <<TEST_FIXTURE>>
 def {{ SELF_CLASS_CC }}_data():
-    return td.{{ SELF_CLASS_CC }}_data
+    return td.{{ SELF_CLASS_CC }}_data()
+
+{{ TEST_DATA_FIXTURE }}
 
 
 <<WRAPPER_BASE>>
@@ -76,6 +78,12 @@ def unpack(function):
     return get_data
 
 {{ WRAPPERS }}
+
+<<COMMENT_HEADING_WRAPPER>>
+# ========== {{ SELF_CLASS_STD }} Wrappers ==========
+
+{{ WRAPPERS }}
+
 
 <<CREATE_WRAPPER>>
 @unpack
@@ -132,7 +140,7 @@ from unit import wrappers
 <<CREATE_UNIT_TEST>>
 def test_create_{{ SELF_CLASS_CC }}(reset_db, {{ SELF_CLASS_CC }}s_data):
     ''' Testing the success case of creating an {{ SELF_CLASS_CC }} '''
-    assert wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['status'] == SUCCESS
+    assert wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['status'] == SUCCESS, f'Failed to create a new instance of {{ SELF_CLASS_CC }} '
 
 {{ UNIT_TESTS }}
 
@@ -147,11 +155,11 @@ def test_get_all_{{ SELF_CLASS_CC }}(reset_db, {{ SELF_CLASS_CC }}s_data):
 
     # Checks all responses succeeds
     for {{ SELF_CLASS_CC }} in {{ SELF_CLASS_CC }}s:
-        assert {{ SELF_CLASS_CC }}["status"] == SUCCESS
+        assert {{ SELF_CLASS_CC }}["status"] == SUCCESS, f'Failed to create an instance of {{ SELF_CLASS_CC }}'
 
     # Compare return list with input list
     all_{{ SELF_CLASS_CC }}s = wrappers.get_all_{{ SELF_CLASS_CC }}s()['data']
-    assert len({{ SELF_CLASS_CC }}s) == len(all_{{ SELF_CLASS_CC }}s)
+    assert len({{ SELF_CLASS_CC }}s) == len(all_{{ SELF_CLASS_CC }}s), f'Non-matching instance(s) of {{ SELF_CLASS_CC }} from the database'
 
 {{ UNIT_TESTS }}
 
@@ -165,7 +173,7 @@ def test_get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLA
     # For every key value in {{ SELF_CLASS_CC }}, ret {{ SELF_CLASS_CC }} shares the same value
     for key, value in {{ SELF_CLASS_CC }}.items():
         if ret_{{ SELF_CLASS_CC }}[key] != value:
-            assert False, f'Return value does not match with given value'
+            assert False, f'Return instance does not match with expected data'
 
     assert True
 
@@ -177,7 +185,7 @@ def test_invalid_get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ 
     ''' Testing the failing case of getting specified {{ SELF_CLASS_CC }} '''
     {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['data']
     ret_{{ SELF_CLASS_CC }} = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'] + 200)
-    assert ret_{{ SELF_CLASS_CC }}['status'] == ERROR, f'Invalid ID did not return error status on get by ID'
+    assert ret_{{ SELF_CLASS_CC }}['status'] == ERROR, f'Invalid ID did not return expected error status'
 
 {{ UNIT_TESTS }}
 
@@ -189,15 +197,15 @@ def test_delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_
     
     # Check pre-delete status
     pre_check_res = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])
-    assert pre_check_res['status'] == SUCCESS
+    assert pre_check_res['status'] == SUCCESS, f'Expected instance not found in database'
 
     # Check deletion request status
     delete_res = wrappers.delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])
-    assert delete_res['status'] == SUCCESS
+    assert delete_res['status'] == SUCCESS, f'Failed to delete given instance from database'
 
     # Check post-delete status
     post_check_res = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])
-    assert post_check_res['status'] == ERROR, f'Deleted item\'s ID still present in database'
+    assert post_check_res['status'] == ERROR, f'Deleted instance is still present in database'
 
 {{ UNIT_TESTS }}
 
@@ -210,15 +218,15 @@ def test_invalid_delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, 
 
     # Check pre-delete status
     pre_check_res = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])
-    assert pre_check_res['status'] == SUCCESS
+    assert pre_check_res['status'] == SUCCESS, f'Expected instance not found in database'
 
     # Check deletion request status, with invalid ID provided
     delete_res = wrappers.delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'] + 200)
-    assert delete_res['status'] == ERROR, f'Invalid ID did not return error status on delete'
+    assert delete_res['status'] == ERROR, f'Invalid instance ID did not return error status on delete'
 
     # Check post-delete status
     post_check_res = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])
-    assert post_check_res['status'] == SUCCESS
+    assert post_check_res['status'] == SUCCESS, f'Expected instance is not in database'
 
 {{ UNIT_TESTS }}
 
@@ -228,19 +236,25 @@ def test_update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_
     ''' Testing the success case of updating {{ SELF_CLASS_CC }} '''
 
     # Checks that both {{ SELF_CLASS_CC }}s data are identical
+    has_diff = False
     {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['data']
     new_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}s_data[1]
-    assert {{ SELF_CLASS_CC }}['name'] != new_{{ SELF_CLASS_CC }}['name']
+    for key, value in {{ SELF_CLASS_CC }}.items():
+        if new_{{ SELF_CLASS_CC }}[key] != value:
+            has_diff = True
+    
+    if has_diff is False:
+        assert False, f'Both given test instance are identical'
 
     # Checks update response status is correct
     new_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}s_data[1]
     update_{{ SELF_CLASS_CC }} = wrappers.update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'], new_{{ SELF_CLASS_CC }})
-    assert update_{{ SELF_CLASS_CC }}['status'] == SUCCESS
+    assert update_{{ SELF_CLASS_CC }}['status'] == SUCCESS, f'Failed to update old instance to new instance'
 
     # Compare all the values in the update dict with the result's value
     for key, value in new_{{ SELF_CLASS_CC }}.items():
         if update_{{ SELF_CLASS_CC }}['data'][key] != value:
-            assert False
+            assert False, f'Returned instance does not match with expected update instance'
 
     assert True
 
@@ -255,16 +269,29 @@ def test_invalid_update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, 
     {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['data']
     new_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}s_data[1]
     update_{{ SELF_CLASS_CC }} = wrappers.update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'] + 200, new_{{ SELF_CLASS_CC }})
-    assert update_{{ SELF_CLASS_CC }}['status'] == ERROR
+    assert update_{{ SELF_CLASS_CC }}['status'] == ERROR, f'Expected update fail did not occur'
 
     # Checks that the current {{ SELF_CLASS_CC }} is untouched
     curr_{{ SELF_CLASS_CC }} = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])
 
     for key, value in {{ SELF_CLASS_CC }}.items():
         if curr_{{ SELF_CLASS_CC }}['data'][key] != value:
-            assert False
+            assert False, f'Expected untouch instance was found to be mutated'
 
     assert True
 
 {{ UNIT_TESTS }}
 
+
+<<TEST_DATA_BASE>>
+# PLEASE FILL OUT THE TEST DATA REQUIRED, 3 per data for all tests to work
+
+{{ TEST_DATA_FUNCS }}
+
+<<TEST_DATA_FUNC>>
+def {{ SELF_CLASS_CC }}_data():
+    return [
+        # TO BE FILLED
+    ]
+
+{{ TEST_DATA_FUNCS }}
