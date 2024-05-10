@@ -1,0 +1,270 @@
+<<CONFTEST_BASE>>
+from app.database import Base
+from sqlalchemy.pool import StaticPool
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+from fastapi.testclient import TestClient
+import pytest
+from app.helpers import get_db
+from app.main import app
+import app.test_data as td
+
+import pathlib
+ 
+# Creates an initial engine that does point to production
+ABS_PATH = pathlib.Path().resolve()
+SQLALCHEMY_DATABASE_URL = f"sqlite:///{ABS_PATH}/app/db/{{ DATABASE_NAME }}.db"
+
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
+)
+TestingSessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine)
+
+Base.metadata.create_all(bind=engine)
+
+# Overiddes the database with a testing database
+def override_get_db():
+    try:
+        db = TestingSessionLocal()
+        yield db
+    finally:
+        db.close()
+
+# Overiddes a dependency function with another function
+app.dependency_overrides[get_db] = override_get_db
+
+client = TestClient(app)
+
+SUCCESS = 200
+ERROR = 400
+
+@ pytest.fixture
+def reset_db():
+    ''' Resets the database via dropping '''
+    Base.metadata.create_all(bind=engine)
+    yield
+    Base.metadata.drop_all(bind=engine)
+
+{{ TEST_DATA_FIXTURE }}
+
+
+<<TEST_FIXTURE>>
+def {{ SELF_CLASS_CC }}_data():
+    return td.{{ SELF_CLASS_CC }}_data
+
+
+<<WRAPPER_BASE>>
+from unit.conftest import client, SUCCESS
+import json
+
+def unpack(function):
+    ''' Wrapper to unpack the json values into parsable dictionary. Easier for testing '''
+    def get_data(*args):
+        resp = function(*args)
+        if resp.status_code != SUCCESS:
+            data = json.loads(resp.text)
+            return {'status': resp.status_code,
+                    'detail': data['detail']
+                    }
+        else:
+            return {'status': resp.status_code,
+                    'data': json.loads(resp.text)
+                    }
+    return get_data
+
+{{ WRAPPERS }}
+
+<<CREATE_WRAPPER>>
+@unpack
+def create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}_data):
+    ''' Wrapper to emulate creating an {{ SELF_CLASS_CC }} '''
+    return client.post('/{{ SELF_CLASS_CC }}', json={{ SELF_CLASS_CC }}_data)
+
+{{ WRAPPERS }}
+
+
+<<GET_ALL_WRAPPER>>
+@unpack
+def get_all_{{ SELF_CLASS_CC }}s():
+    ''' Wrapper to emulate getting all {{ SELF_CLASS_CC }}s '''
+    return client.get('/{{ SELF_CLASS_CC }}s')
+
+{{ WRAPPERS }}
+
+
+<<GET_BY_ID_WRAPPER>>
+@unpack
+def get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}_id):
+    ''' Wrapper to emulate getting specified {{ SELF_CLASS_CC }} '''
+    return client.get(f'/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}')
+
+{{ WRAPPERS }}
+
+
+<<UPDATE_WRAPPER>>
+@unpack
+def delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}_id):
+    ''' Wrapper to emulate deleting specified {{ SELF_CLASS_CC }} '''
+    return client.delete(f'/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}')
+
+{{ WRAPPERS }}
+
+
+<<DELETE_WRAPPER>>
+@unpack
+def update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}_id, {{ SELF_CLASS_CC }}_dict):
+    ''' Wrapper to emulate updating specified {{ SELF_CLASS_CC }} '''
+    return client.patch(f'/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}', json={{ SELF_CLASS_CC }}_dict)
+
+{{ WRAPPERS }}
+
+
+<<UNIT_TEST_BASE>>
+from unit.conftest import client, SUCCESS, ERROR
+from unit import wrappers
+
+{{ UNIT_TESTS }}
+
+
+<<CREATE_UNIT_TEST>>
+def test_create_{{ SELF_CLASS_CC }}(reset_db, {{ SELF_CLASS_CC }}s_data):
+    ''' Testing the success case of creating an {{ SELF_CLASS_CC }} '''
+    assert wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['status'] == SUCCESS
+
+{{ UNIT_TESTS }}
+
+
+<<GET_ALL_UNIT_TEST>>
+def test_get_all_{{ SELF_CLASS_CC }}(reset_db, {{ SELF_CLASS_CC }}s_data):
+    ''' Testing the success case of getting all {{ SELF_CLASS_CC }}s '''
+    
+    # Passes all {{ SELF_CLASS_CC }} test data into database
+    {{ SELF_CLASS_CC }}s = [wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[i])
+                for i in range(0, len({{ SELF_CLASS_CC }}s_data))]
+
+    # Checks all responses succeeds
+    for {{ SELF_CLASS_CC }} in {{ SELF_CLASS_CC }}s:
+        assert {{ SELF_CLASS_CC }}["status"] == SUCCESS
+
+    # Compare return list with input list
+    all_{{ SELF_CLASS_CC }}s = wrappers.get_all_{{ SELF_CLASS_CC }}s()['data']
+    assert len({{ SELF_CLASS_CC }}s) == len(all_{{ SELF_CLASS_CC }}s)
+
+{{ UNIT_TESTS }}
+
+
+<<VALID_GET_BY_ID_UNIT_TEST>>
+def test_get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}s_data):
+    ''' Testing the success case of getting specified {{ SELF_CLASS_CC }} '''
+    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['data']
+    ret_{{ SELF_CLASS_CC }} = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])['data']
+
+    # For every key value in {{ SELF_CLASS_CC }}, ret {{ SELF_CLASS_CC }} shares the same value
+    for key, value in {{ SELF_CLASS_CC }}.items():
+        if ret_{{ SELF_CLASS_CC }}[key] != value:
+            assert False, f'Return value does not match with given value'
+
+    assert True
+
+{{ UNIT_TESTS }}
+
+
+<<INVALID_GET_BY_ID_UNIT_TEST>>
+def test_invalid_get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}s_data):
+    ''' Testing the failing case of getting specified {{ SELF_CLASS_CC }} '''
+    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['data']
+    ret_{{ SELF_CLASS_CC }} = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'] + 200)
+    assert ret_{{ SELF_CLASS_CC }}['status'] == ERROR, f'Invalid ID did not return error status on get by ID'
+
+{{ UNIT_TESTS }}
+
+
+<<VALID_DELETE_UNIT_TEST>>
+def test_delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}s_data):
+    ''' Testing the success case of deleting {{ SELF_CLASS_CC }} '''
+    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['data']
+    
+    # Check pre-delete status
+    pre_check_res = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])
+    assert pre_check_res['status'] == SUCCESS
+
+    # Check deletion request status
+    delete_res = wrappers.delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])
+    assert delete_res['status'] == SUCCESS
+
+    # Check post-delete status
+    post_check_res = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])
+    assert post_check_res['status'] == ERROR, f'Deleted item\'s ID still present in database'
+
+{{ UNIT_TESTS }}
+
+
+<<INVALID_DELETE_UNIT_TEST>>
+def test_invalid_delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}s_data):
+    ''' Testing the fail case of deleting {{ SELF_CLASS_CC }} '''
+
+    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['data']
+
+    # Check pre-delete status
+    pre_check_res = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])
+    assert pre_check_res['status'] == SUCCESS
+
+    # Check deletion request status, with invalid ID provided
+    delete_res = wrappers.delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'] + 200)
+    assert delete_res['status'] == ERROR, f'Invalid ID did not return error status on delete'
+
+    # Check post-delete status
+    post_check_res = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])
+    assert post_check_res['status'] == SUCCESS
+
+{{ UNIT_TESTS }}
+
+
+<<VALID_UPDATE_UNIT_TEST>>
+def test_update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}s_data):
+    ''' Testing the success case of updating {{ SELF_CLASS_CC }} '''
+
+    # Checks that both {{ SELF_CLASS_CC }}s data are identical
+    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['data']
+    new_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}s_data[1]
+    assert {{ SELF_CLASS_CC }}['name'] != new_{{ SELF_CLASS_CC }}['name']
+
+    # Checks update response status is correct
+    new_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}s_data[1]
+    update_{{ SELF_CLASS_CC }} = wrappers.update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'], new_{{ SELF_CLASS_CC }})
+    assert update_{{ SELF_CLASS_CC }}['status'] == SUCCESS
+
+    # Compare all the values in the update dict with the result's value
+    for key, value in new_{{ SELF_CLASS_CC }}.items():
+        if update_{{ SELF_CLASS_CC }}['data'][key] != value:
+            assert False
+
+    assert True
+
+{{ UNIT_TESTS }}
+
+
+<<INVALID_UPDATE_UNIT_TEST>>
+def test_invalid_update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}s_data):
+    ''' Testing the fail case of updating {{ SELF_CLASS_CC }} '''
+
+    # Checks update response status is invalid, from invalid ID provided
+    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['data']
+    new_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}s_data[1]
+    update_{{ SELF_CLASS_CC }} = wrappers.update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'] + 200, new_{{ SELF_CLASS_CC }})
+    assert update_{{ SELF_CLASS_CC }}['status'] == ERROR
+
+    # Checks that the current {{ SELF_CLASS_CC }} is untouched
+    curr_{{ SELF_CLASS_CC }} = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])
+
+    for key, value in {{ SELF_CLASS_CC }}.items():
+        if curr_{{ SELF_CLASS_CC }}['data'][key] != value:
+            assert False
+
+    assert True
+
+{{ UNIT_TESTS }}
+
