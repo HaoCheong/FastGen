@@ -1,3 +1,5 @@
+source helpers.py
+
 # Generate all the required crud functions
 function generate_cruds() {
     
@@ -6,7 +8,8 @@ function generate_cruds() {
     for crud in $(jq -r '.tables[] | .name ' $CONFIG_NAME)
     do
         echo "> Generating CRUDs for $crud"
-        crud_cc=$(echo "$crud" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
+
+        crud_cc=$(to_camel_case $crud)
         file_name=./$PROJECT_NAME/app/cruds/"$crud_cc"_cruds.py
         table_name=$(jq -r '.tables[] | select(.name == "'$crud'") | .tablename ' $CONFIG_NAME)
 
@@ -75,7 +78,7 @@ function generate_cruds() {
         do
             
             to_table=$(echo $relation | cut -d"," -f2)
-            to_table_cc=$(echo "$to_table" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
+            to_table_cc=$(to_camel_case $to_table)
             assign_file_name=./$PROJECT_NAME/app/cruds/"$crud_cc"_"$to_table_cc"_assign.py
             table_rel=$(echo $relation | cut -d"," -f3)
 

@@ -1,12 +1,14 @@
+source helpers.py
+
 # Generate necessary files from model
 function generate_models() {
     echo "======== GENERATE MODELS FILES ========"
 
     # For every instance
-    for model in $(jq -r '.tables[] | .name ' $CONFIG_NAME)
+    for model in $(get_all_tables)
     do
         echo "> Generating model for $model"
-        model_cc=$(echo "$model" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
+        model_cc=$(to_camel_case $model)
         file_name=./$PROJECT_NAME/app/models/"$model_cc"_model.py
         table_name=$(jq -r '.tables[] | select(.name == "'$model'") | .tablename ' $CONFIG_NAME)
 
@@ -73,7 +75,7 @@ function generate_models() {
         for relation in $curr_model_relations
         do
             to_table=$(echo $relation | cut -d"," -f2)
-            to_table_cc=$(echo "$to_table" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
+            to_table_cc=$(to_camel_case $to_table)
             to_table_name=$(jq -r ' .tables[] | select(.name == "'$to_table'") | .tablename' $CONFIG_NAME)
             table_rel=$(echo $relation | cut -d"," -f3)
 
@@ -145,7 +147,7 @@ function generate_models() {
         for relation in $curr_model_relations
         do
             from_table=$(echo $relation | cut -d"," -f2)
-            from_table_cc=$(echo "$from_table" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
+            from_table_cc=$(to_camel_case $from_table)
             table_rel=$(echo $relation | cut -d"," -f3)
 
             if [[ $table_rel == 'm2m' ]]

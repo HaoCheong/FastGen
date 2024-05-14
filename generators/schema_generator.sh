@@ -1,3 +1,5 @@
+source helpers.py
+
 function generate_schemas() {
     echo "======== GENERATE SCHEMA FILES ========"
 
@@ -7,7 +9,7 @@ function generate_schemas() {
 
         # Generating base file
         echo "> Generating schema for $schema"
-        schema_cc=$(echo "$schema" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
+        schema_cc=$(to_camel_case $schema)
         file_name=./$PROJECT_NAME/app/schemas/"$schema_cc"_schemas.py
         table_name=$(jq -r '.tables[] | select(.name == "'$schema'") | .tablename ' $CONFIG_NAME)
 
@@ -105,7 +107,7 @@ function generate_schemas() {
         for relation in $curr_model_relations
         do
             to_table=$(echo $relation | cut -d"," -f2)
-            to_table_cc=$(echo "$to_table" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
+            to_table_cc=$(to_camel_case $to_table)
             table_rel=$(echo $relation | cut -d"," -f3)
 
             schema_import_rel=$(cat ./templates/schema_templates.txt | grep -e "<<WR_IMPORT>>" -A2 | tail -2)
@@ -158,7 +160,7 @@ function generate_schemas() {
         for relation in $curr_model_relations
         do
             from_table=$(echo $relation | cut -d"," -f2)
-            from_table_cc=$(echo "$from_table" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
+            from_table_cc=$(to_camel_case $from_table)
             table_rel=$(echo $relation | cut -d"," -f3)
 
             # echo $schema, $from_table, $table_rel

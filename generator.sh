@@ -8,6 +8,7 @@ source generators/crud_generator.sh
 source generators/endpoint_generator.sh
 source generators/main_generator.sh
 source generators/test_generator.sh
+source generators/helpers.sh
 
 TEMP_TXT=/dev/shm/temp.txt
 

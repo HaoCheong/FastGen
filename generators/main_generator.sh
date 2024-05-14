@@ -58,7 +58,7 @@ function generate_main_files() {
 
     for table in $(jq -r ' .tables[] | .name ' $CONFIG_NAME)
     do
-        table_cc=$(echo "$table" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
+        table_cc=$(to_camel_case $table)
         
         main_import_template=$(cat ./templates/main_templates.txt | grep -e "<<IMPORT_BASE>>" -A2 | tail -2)
         filled_main_import_template=$(echo "$main_import_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$table_cc/g")
@@ -78,10 +78,10 @@ function generate_main_files() {
     do
 
         from_table=$(echo "$relation" | cut -d"|" -f1)
-        from_table_cc=$(echo "$from_table" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
+        from_table_cc=$(to_camel_case $from_table)
         
         to_table=$(echo "$relation" | cut -d"|" -f2)
-        to_table_cc=$(echo "$to_table" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
+        to_table_cc=$(to_camel_case $to_table)
 
         assign_import_template=$(cat ./templates/main_templates.txt | grep -e "<<IMPORT_ASSIGNMENT_BASE>>" -A2 | tail -2)
         filled_assign_import_template=$(echo "$assign_import_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$from_table_cc/g")
