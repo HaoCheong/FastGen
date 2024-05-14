@@ -4,10 +4,14 @@ function generate_unit_tests() {
 
     # Generate Conf Test
     ## Generate base for conf
+    proj_data=$(jq -r ' .project | [.name, .desc, .version, .database_name] | join("|")' $CONFIG_NAME)
+    database_name=$(echo "$proj_data" | cut -d"|" -f4)
+
     echo "> Generate Conftest Base"
     file_name="./$PROJECT_NAME/tests/unit/conftest.py"
     conftest_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<CONFTEST_BASE>>" -A50 | tail -50)
-    echo "$conftest_template" > $TEMP_TXT
+    filled_conftest_template=$(echo "$conftest_template" | sed -r "s/\{\{ DATABASE_NAME \}\}/$database_name/g")
+    echo "$filled_conftest_template" > $TEMP_TXT
 
     for unit in $(jq -r '.tables[] | .name ' $CONFIG_NAME)
     do
@@ -15,7 +19,7 @@ function generate_unit_tests() {
 
         unit_cc=$(echo "$unit" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
         
-        fixture_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<TEST_FIXTURE>>" -A4 | tail -4)
+        fixture_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<TEST_FIXTURE>>" -A5 | tail -5)
         filled_fixture_template=$(echo "$fixture_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$unit_cc/g")
         pop_file=$(awk -v var="$filled_fixture_template" '{gsub(/{{ TEST_DATA_FIXTURE }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
@@ -73,6 +77,9 @@ function generate_unit_tests() {
         echo "$pop_file" > $TEMP_TXT
         
     done
+
+    clean_template $TEMP_TXT
+    cp $TEMP_TXT $file_name
 
     # Generate Test Data
     ## Generate Test Data Base

@@ -41,7 +41,7 @@ client = TestClient(app)
 SUCCESS = 200
 ERROR = 400
 
-@ pytest.fixture
+@pytest.fixture
 def reset_db():
     ''' Resets the database via dropping '''
     Base.metadata.create_all(bind=engine)
@@ -52,6 +52,7 @@ def reset_db():
 
 
 <<TEST_FIXTURE>>
+@pytest.fixture
 def {{ SELF_CLASS_CC }}_data():
     return td.{{ SELF_CLASS_CC }}_data()
 
@@ -89,7 +90,7 @@ def unpack(function):
 @unpack
 def create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}_data):
     ''' Wrapper to emulate creating an {{ SELF_CLASS_CC }} '''
-    return client.post('/{{ SELF_CLASS_CC }}', json={{ SELF_CLASS_CC }}_data)
+    return client.post('/api/v1/{{ SELF_CLASS_CC }}', json={{ SELF_CLASS_CC }}_data)
 
 {{ WRAPPERS }}
 
@@ -98,7 +99,7 @@ def create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}_data):
 @unpack
 def get_all_{{ SELF_CLASS_CC }}s():
     ''' Wrapper to emulate getting all {{ SELF_CLASS_CC }}s '''
-    return client.get('/{{ SELF_CLASS_CC }}s')
+    return client.get('/api/v1/{{ SELF_CLASS_CC }}s')
 
 {{ WRAPPERS }}
 
@@ -107,7 +108,7 @@ def get_all_{{ SELF_CLASS_CC }}s():
 @unpack
 def get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}_id):
     ''' Wrapper to emulate getting specified {{ SELF_CLASS_CC }} '''
-    return client.get(f'/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}')
+    return client.get(f'/api/v1/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}')
 
 {{ WRAPPERS }}
 
@@ -116,7 +117,7 @@ def get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}_id):
 @unpack
 def delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}_id):
     ''' Wrapper to emulate deleting specified {{ SELF_CLASS_CC }} '''
-    return client.delete(f'/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}')
+    return client.delete(f'/api/v1/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}')
 
 {{ WRAPPERS }}
 
@@ -125,7 +126,7 @@ def delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}_id)
 @unpack
 def update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}_id, {{ SELF_CLASS_CC }}_dict):
     ''' Wrapper to emulate updating specified {{ SELF_CLASS_CC }} '''
-    return client.patch(f'/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}', json={{ SELF_CLASS_CC }}_dict)
+    return client.patch(f'/api/v1/{{ SELF_CLASS_CC }}/{{{ SELF_CLASS_CC }}_id}', json={{ SELF_CLASS_CC }}_dict)
 
 {{ WRAPPERS }}
 
@@ -138,20 +139,20 @@ from unit import wrappers
 
 
 <<CREATE_UNIT_TEST>>
-def test_create_{{ SELF_CLASS_CC }}(reset_db, {{ SELF_CLASS_CC }}s_data):
+def test_create_{{ SELF_CLASS_CC }}(reset_db, {{ SELF_CLASS_CC }}_data):
     ''' Testing the success case of creating an {{ SELF_CLASS_CC }} '''
-    assert wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['status'] == SUCCESS, f'Failed to create a new instance of {{ SELF_CLASS_CC }} '
+    assert wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}_data[0])['status'] == SUCCESS, f'Failed to create a new instance of {{ SELF_CLASS_CC }} '
 
 {{ UNIT_TESTS }}
 
 
 <<GET_ALL_UNIT_TEST>>
-def test_get_all_{{ SELF_CLASS_CC }}(reset_db, {{ SELF_CLASS_CC }}s_data):
+def test_get_all_{{ SELF_CLASS_CC }}(reset_db, {{ SELF_CLASS_CC }}_data):
     ''' Testing the success case of getting all {{ SELF_CLASS_CC }}s '''
     
     # Passes all {{ SELF_CLASS_CC }} test data into database
-    {{ SELF_CLASS_CC }}s = [wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[i])
-                for i in range(0, len({{ SELF_CLASS_CC }}s_data))]
+    {{ SELF_CLASS_CC }}s = [wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}_data[i])
+                for i in range(0, len({{ SELF_CLASS_CC }}_data))]
 
     # Checks all responses succeeds
     for {{ SELF_CLASS_CC }} in {{ SELF_CLASS_CC }}s:
@@ -165,9 +166,9 @@ def test_get_all_{{ SELF_CLASS_CC }}(reset_db, {{ SELF_CLASS_CC }}s_data):
 
 
 <<VALID_GET_BY_ID_UNIT_TEST>>
-def test_get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}s_data):
+def test_get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}_data):
     ''' Testing the success case of getting specified {{ SELF_CLASS_CC }} '''
-    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['data']
+    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}_data[0])['data']
     ret_{{ SELF_CLASS_CC }} = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])['data']
 
     # For every key value in {{ SELF_CLASS_CC }}, ret {{ SELF_CLASS_CC }} shares the same value
@@ -181,9 +182,9 @@ def test_get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLA
 
 
 <<INVALID_GET_BY_ID_UNIT_TEST>>
-def test_invalid_get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}s_data):
+def test_invalid_get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}_data):
     ''' Testing the failing case of getting specified {{ SELF_CLASS_CC }} '''
-    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['data']
+    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}_data[0])['data']
     ret_{{ SELF_CLASS_CC }} = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'] + 200)
     assert ret_{{ SELF_CLASS_CC }}['status'] == ERROR, f'Invalid ID did not return expected error status'
 
@@ -191,9 +192,9 @@ def test_invalid_get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ 
 
 
 <<VALID_DELETE_UNIT_TEST>>
-def test_delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}s_data):
+def test_delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}_data):
     ''' Testing the success case of deleting {{ SELF_CLASS_CC }} '''
-    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['data']
+    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}_data[0])['data']
     
     # Check pre-delete status
     pre_check_res = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])
@@ -211,10 +212,10 @@ def test_delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_
 
 
 <<INVALID_DELETE_UNIT_TEST>>
-def test_invalid_delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}s_data):
+def test_invalid_delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}_data):
     ''' Testing the fail case of deleting {{ SELF_CLASS_CC }} '''
 
-    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['data']
+    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}_data[0])['data']
 
     # Check pre-delete status
     pre_check_res = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'])
@@ -232,13 +233,13 @@ def test_invalid_delete_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, 
 
 
 <<VALID_UPDATE_UNIT_TEST>>
-def test_update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}s_data):
+def test_update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}_data):
     ''' Testing the success case of updating {{ SELF_CLASS_CC }} '''
 
     # Checks that both {{ SELF_CLASS_CC }}s data are identical
     has_diff = False
-    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['data']
-    new_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}s_data[1]
+    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}_data[0])['data']
+    new_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}_data[1]
     for key, value in {{ SELF_CLASS_CC }}.items():
         if new_{{ SELF_CLASS_CC }}[key] != value:
             has_diff = True
@@ -247,7 +248,7 @@ def test_update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_
         assert False, f'Both given test instance are identical'
 
     # Checks update response status is correct
-    new_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}s_data[1]
+    new_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}_data[1]
     update_{{ SELF_CLASS_CC }} = wrappers.update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'], new_{{ SELF_CLASS_CC }})
     assert update_{{ SELF_CLASS_CC }}['status'] == SUCCESS, f'Failed to update old instance to new instance'
 
@@ -262,12 +263,12 @@ def test_update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_
 
 
 <<INVALID_UPDATE_UNIT_TEST>>
-def test_invalid_update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}s_data):
+def test_invalid_update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}_data):
     ''' Testing the fail case of updating {{ SELF_CLASS_CC }} '''
 
     # Checks update response status is invalid, from invalid ID provided
-    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}s_data[0])['data']
-    new_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}s_data[1]
+    {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}_data[0])['data']
+    new_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}_data[1]
     update_{{ SELF_CLASS_CC }} = wrappers.update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'] + 200, new_{{ SELF_CLASS_CC }})
     assert update_{{ SELF_CLASS_CC }}['status'] == ERROR, f'Expected update fail did not occur'
 
