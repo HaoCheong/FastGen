@@ -21,7 +21,7 @@ function generate_models() {
         sed -r -i "s/\{\{ TABLE_NAME \}\}/$table_name/g" $TEMP_TXT
 
         # Create get all the column
-        model_cols=$(jq -r ' .tables[] | select(.name == "'$model'") | .columns[] | [.column_name, .column_type] | join(",") ' $CONFIG_NAME)
+        model_cols=$(get_table_column $model)
         for cols in $model_cols
         do
             # echo $cols

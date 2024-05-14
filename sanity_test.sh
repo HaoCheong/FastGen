@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm -rf test_proj/
+
 echo "======== GENERATE TEST PROJECT ========"
 ./generator.sh -p test_proj -c test_config.json
 cd test_proj
@@ -16,6 +18,6 @@ echo "======== RUN TESTS ========"
 cp ../test_pets_db.txt tests/unit/test_data.py
 python3 -m pytest tests/unit/*_tests.py
 
-echo "======== ERASING ========"
-cd ../
-rm -rf test_proj/
+# echo "======== ERASING ========"
+# cd ../
+# rm -rf test_proj/

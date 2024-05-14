@@ -4,7 +4,7 @@ function tag_replace() {
     local tag_word=$2
     local replaced_word=$3
 
-    new_line=$(echo "$operative_line" | sed -r "s/\{\{ $tag_word \}\}/$replaced_word/g")
+    local new_line=$(echo "$operative_line" | sed -r "s/\{\{ $tag_word \}\}/$replaced_word/g")
     echo "$new_line"
 }
 
@@ -14,19 +14,25 @@ function template_getter() {
     local template_tag=$2
     local template_line_count=$3
     
-    model_template=$(cat $template_file_path | grep -e "$template_tag" -A$template_line_count | tail -1$template_line_count)
-    echo "$model_template"
+    local template=$(cat $template_file_path | grep -e $template_tag -A$template_line_count | tail -$template_line_count)
+    echo "$template"
+}
+
+function newline_replace() {
+    local final_line=$1
+    res=$(echo "$final_line" | sed 's/\\n/\\\\n/g')
+    echo "$res"
 }
 
 # 
 function get_table_column() {
     local table_name=$1
-    tables=$(jq -r ' .tables[] | select(.name == "'$table_name'") | .columns[] | [.column_name, .column_type] | join(",") ' $CONFIG_NAME)
+    local tables=$(jq -r ' .tables[] | select(.name == "'$table_name'") | .columns[] | [.column_name, .column_type] | join(",") ' $CONFIG_NAME)
     echo "$tables"
 }
 
 function get_all_tables() {
-    table=$(jq -r '.tables[] | .name ' $CONFIG_NAME)
+    local table=$(jq -r '.tables[] | .name ' $CONFIG_NAME)
     echo "$table"
 }
 
@@ -43,6 +49,6 @@ function get_all_tables() {
 function to_camel_case() {
     
     local var_name=$1
-    cc_var_name=$(echo "$var_name" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
+    local cc_var_name=$(echo "$var_name" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
     echo "$cc_var_name"
 }
