@@ -49,9 +49,7 @@ function validate_rel() {
     rel_tables=$(jq -r ' .relationships[] | [.table_1, .table_2] | join("\n") ' $CONFIG_NAME | sort | uniq)
     all_tables=$(get_all_tables)
     
-
-
-    if grep -qvxF "$(printf '%s\n' "${all_tables[@]}")" <<< "$rel_tables" && [[ !-z $rel_tables ]]
+    if grep -qvxF "$(printf '%s\n' "${all_tables[@]}")" <<< "$rel_tables"
     then
         echo "ERROR: Table in relationship does not have existing model"
         exit

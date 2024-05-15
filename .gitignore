@@ -179,4 +179,5 @@ app/
 temp.txt
 project/
 test_proj/
-prestart_config.json
+prestart_*
+test_*.txt
