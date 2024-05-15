@@ -1,5 +1,3 @@
-source helpers.py
-
 function generate_schemas() {
     echo "======== GENERATE SCHEMA FILES ========"
 

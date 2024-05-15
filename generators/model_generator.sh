@@ -1,5 +1,3 @@
-source helpers.py
-
 # Generate necessary files from model
 function generate_models() {
     echo "======== GENERATE MODELS FILES ========"

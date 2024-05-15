@@ -1,4 +1,3 @@
-source helpers.py
 function generate_endpoints() {
     
     echo "======== GENERATE CRUD FILES ========"

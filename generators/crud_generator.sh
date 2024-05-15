@@ -1,5 +1,3 @@
-source helpers.py
-
 # Generate all the required crud functions
 function generate_cruds() {
     

@@ -1,5 +1,3 @@
-source helpers.py
-
 # Generate the base directories
 function generate_base_directories() {
     echo "======== GENERATE BASE DIRECTORIES ========"
@@ -48,16 +46,17 @@ function clean_template() {
 
 function validate_rel() {
     # Check if all the fields in relationships are valid table name
-    rel_tables=$(jq -r ' .relationships[] | [.table_1, .table_2] | join("\n") ' config.json | sort | uniq)
+    rel_tables=$(jq -r ' .relationships[] | [.table_1, .table_2] | join("\n") ' $CONFIG_NAME | sort | uniq)
     all_tables=$(get_all_tables)
-    if grep -qvxF "$(printf '%s\n' "${all_tables[@]}")" <<< "$rel_tables"
+    
+
+
+    if grep -qvxF "$(printf '%s\n' "${all_tables[@]}")" <<< "$rel_tables" && [[ !-z $rel_tables ]]
     then
         echo "ERROR: Table in relationship does not have existing model"
         exit
-    fi
-
     # Check if all the rels are valid (m2m, o2o, m2o)
-    for rel in $(jq -r ' .relationships[] | .type ' config.json | sort | uniq)
+    for rel in $(jq -r ' .relationships[] | .type ' $CONFIG_NAME | sort | uniq)
     do
         if [[ $rel != 'm2m' ]] && [[ $rel != 'm2o' ]] && [[ $rel != 'o2o' ]]
         then
@@ -68,7 +67,7 @@ function validate_rel() {
     done
 
     # Check if there are repeated rels
-    dup_rel=$(jq -r ' .relationships[] | [.table_1, .table_2, .type] | join(",")' config.json | uniq -d)
+    dup_rel=$(jq -r ' .relationships[] | [.table_1, .table_2, .type] | join(",")' $CONFIG_NAME | uniq -d)
     if [[ ! -z $dup_rel ]]
     then
         echo "ERROR: Duplicate relations detected"
