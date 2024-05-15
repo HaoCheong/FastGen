@@ -4,7 +4,7 @@ FastGen acts as an automatic boilerplate generator to create basic CRUD apps giv
 Idea is to reduce the unneccessary time spent required scaffolding application while avoiding typically human error pitfall. 
 
 
-***
+
 ## Notable Files and Directories
 
 ### `generators/`
@@ -18,7 +18,7 @@ The directory contains all the templates of standard fastAPI classes and code re
 ### `generator.sh`
 
 The main trigger file to call and generate the project
-***
+
 ## Setup 
 
 The script depends on providing a configuration file containing the structure of the models that are to be generated. See the following example (snippet of of test_config.json provided).
@@ -138,7 +138,7 @@ Relationships are supported and represented as such
 > - Many to One -> m2o
 > - One to One -> o2o
 
-***
+
 ## Usage
 
 ### Generating
@@ -201,7 +201,7 @@ This will start the webserver pointing at port 9876.
 
 Afterwards you can access the generated documentation on the following webpage: [http:/127.0.0.1:9876/docs](http:/127.0.0.1:9876/docs)
 
-***
+
 
 ## Testing
 
