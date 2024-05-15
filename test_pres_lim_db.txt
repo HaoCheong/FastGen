@@ -1,0 +1,20 @@
+# PLEASE FILL OUT THE TEST DATA REQUIRED, 3 per data for all tests to work
+from datetime import datetime
+
+def branch_data():
+    return [
+        {
+            "branch_name": "Meatloaf Laverton",
+            "deleted": 0,
+            "created_at": str(datetime.now()),
+            "updated_at": str(datetime.now())
+        },
+        {
+            "branch_name": "Deleton Minto",
+            "deleted": 1,
+            "created_at": str(datetime.now()),
+            "updated_at": str(datetime.now())
+        }
+    ]
+
+
