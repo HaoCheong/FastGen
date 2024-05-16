@@ -1,3 +1,4 @@
+# Generate all the required endpoints
 function generate_endpoints() {
     
     echo "======== GENERATE CRUD FILES ========"

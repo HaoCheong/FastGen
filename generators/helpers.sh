@@ -18,32 +18,25 @@ function template_getter() {
     echo "$template"
 }
 
+# Do a newline replace
 function newline_replace() {
     local final_line=$1
     res=$(echo "$final_line" | sed 's/\\n/\\\\n/g')
     echo "$res"
 }
 
-# 
+# Get all the columns for a given table
 function get_table_column() {
     local table_name=$1
     local tables=$(jq -r ' .tables[] | select(.name == "'$table_name'") | .columns[] | [.column_name, .column_type] | join(",") ' $CONFIG_NAME)
     echo "$tables"
 }
 
+# Get all tables
 function get_all_tables() {
     local table=$(jq -r '.tables[] | .name ' $CONFIG_NAME)
     echo "$table"
 }
-
-# function get_relation_ship() {
-#     local inv_flag=$1 # Dictates if it is table_1 -> table_2 or the inverse table_2 to table_1
-#     if [[ $inv_flag == 1 ]]; then
-#         echo
-#     else
-
-#     fi
-# }
 
 # Converts a given word to camel case
 function to_camel_case() {
