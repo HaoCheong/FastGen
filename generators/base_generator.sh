@@ -53,6 +53,7 @@ function validate_rel() {
     then
         echo "ERROR: Table in relationship does not have existing model"
         exit
+    fi
     # Check if all the rels are valid (m2m, o2o, m2o)
     for rel in $(jq -r ' .relationships[] | .type ' $CONFIG_NAME | sort | uniq)
     do
@@ -72,5 +73,4 @@ function validate_rel() {
         echo "$dup_rel"
         exit
     fi
-
 }
