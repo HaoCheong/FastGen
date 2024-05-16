@@ -8,7 +8,6 @@ rm -rf $PROJECT_NAME/
 
 echo "======== GENERATE TEST PROJECT ========"
 ./generator.sh -p $PROJECT_NAME -c $CONFIG_NAME
-cd $PROJECT_NAME
 
 echo "======== SETUP ENVIRONMENT ========"
 python3 -m venv .venv
