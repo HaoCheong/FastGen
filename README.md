@@ -1,9 +1,7 @@
 # FastGen - A FastAPI auto generator
 
 FastGen acts as an automatic boilerplate generator to create basic CRUD apps given a configuration file. 
-Idea is to reduce the unneccessary time spent required scaffolding application while avoiding typically human error pitfall. 
-
-
+Idea is to reduce the unneccessary time spent required scaffolding application while avoiding typically human error pitfall.
 
 ## Notable Files and Directories
 
@@ -19,7 +17,7 @@ The directory contains all the templates of standard fastAPI classes and code re
 
 The main trigger file to call and generate the project
 
-## Setup 
+## Setup
 
 The script depends on providing a configuration file containing the structure of the models that are to be generated. See the following example (snippet of of test_config.json provided).
 
