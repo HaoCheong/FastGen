@@ -72,7 +72,7 @@ echo "======== CLEANING UP ========"
 rm $TEMP_TXT
 
 echo "======== COMPLETE ========"
-
+echo " - Please include 3 pieces of testing data in test/unit/test_data.py for each model"
 
 
 # ====== Standardise Name ======

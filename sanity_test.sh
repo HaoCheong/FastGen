@@ -18,6 +18,6 @@ echo "======== INSTALL AND RUN ========"
 pip3 install -r requirements.txt
 python3 -m uvicorn app.main:app --reload --port 9876
 
-# echo "======== RUN TESTS ========"
+echo "======== RUN TESTS ========"
 cp ../$TEST_FILE tests/unit/test_data.py
 python3 -m pytest tests/unit/*_tests.py
