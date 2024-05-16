@@ -222,7 +222,7 @@ This will start the run all generated basic unit test.
 A Sanity Test Script has been created to ensure the application works correctly. To check, run the following command
 
 ```bash
-./sanity_test.sh
+./sanity_test.sh test_project test_config.json sample_data.txt
 ```
 
 The script will create a test project using the provided test_config.json and start the application on [http://127.0.0.1:9876](http://127.0.0.1:9876) and on exit, will run the generated unit tests.
