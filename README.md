@@ -216,3 +216,13 @@ python3 -m pytest test/unit/*_tests.py
 ```
 
 This will start the run all generated basic unit test.
+
+## Sanity Check
+
+A Sanity Test Script has been created to ensure the application works correctly. To check, run the following command
+
+```bash
+./sanity_test.sh
+```
+
+The script will create a test project using the provided test_config.json and start the application on [http://127.0.0.1:9876](http://127.0.0.1:9876) and on exit, will run the generated unit tests.
