@@ -45,3 +45,39 @@ function to_camel_case() {
     local cc_var_name=$(echo "$var_name" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
     echo "$cc_var_name"
 }
+
+# Validates relationship gener
+function validate_rel() {
+    # Check if all the fields in relationships are valid table name
+    rel_tables=$(jq -r ' .relationships[] | [.table_1, .table_2] | join("\n") ' $CONFIG_NAME | sort | uniq)
+    all_tables=$(get_all_tables)
+    
+    if [[ ! -z "$rel_tables" ]]
+    then
+        if grep -qvxF "$(printf '%s\n' "${all_tables[@]}")" <<< "$rel_tables"
+        then
+            echo "ERROR: Table in relationship does not have existing model"
+            exit
+        fi
+    fi
+
+    # Check if all the rels are valid (m2m, o2o, m2o)
+    for rel in $(jq -r ' .relationships[] | .type ' $CONFIG_NAME | sort | uniq)
+    do
+        if [[ $rel != 'm2m' ]] && [[ $rel != 'm2o' ]] && [[ $rel != 'o2o' ]]
+        then
+            echo "ERROR: Unknown relations ship. Only allow m2m, m2o, and o2o"
+            echo "$rel"
+            exit
+        fi
+    done
+
+    # Check if there are repeated rels
+    dup_rel=$(jq -r ' .relationships[] | [.table_1, .table_2, .type] | join(",")' $CONFIG_NAME | uniq -d)
+    if [[ ! -z $dup_rel ]]
+    then
+        echo "ERROR: Duplicate relations detected"
+        echo "$dup_rel"
+        exit
+    fi
+}

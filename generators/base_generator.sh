@@ -1,4 +1,6 @@
-# Generate the base directories
+# Base generators - Lay out the initial directories and default files 
+
+# Generates the base directories required
 function generate_base_directories() {
     echo "======== GENERATE BASE DIRECTORIES ========"
 
@@ -16,7 +18,7 @@ function generate_base_directories() {
 }
 
 
-# Generate the known files and directories
+# Generate the known required files and directories
 function generate_base_files() {
 
     echo "======== GENERATE BASE FILES ========"
@@ -29,52 +31,15 @@ function generate_base_files() {
     touch ./$PROJECT_NAME/app/endpoints/__init__.py
 
     touch ./$PROJECT_NAME/tests/unit/__init__.py
-
-    
 }
 
-# Clean the template from all the unused tags
+# Clean the template
 function clean_template() {
 
-    # Removes tags
+    # Removes trailing tags
     sed -r -i -e "s/\{\{ [A-Z_]+ \}\}//g" $1
 
-    # Removes double new lines
-    # How the fuck does this work
+    # Removes triple new lines
+    # How the fuck does this work?
     sed -i -e ':a;N;$!ba;s/\n\n\n/\n/g' $1
-}
-
-function validate_rel() {
-    # Check if all the fields in relationships are valid table name
-    rel_tables=$(jq -r ' .relationships[] | [.table_1, .table_2] | join("\n") ' $CONFIG_NAME | sort | uniq)
-    all_tables=$(get_all_tables)
-    
-    if [[ ! -z "$rel_tables" ]]
-    then
-        if grep -qvxF "$(printf '%s\n' "${all_tables[@]}")" <<< "$rel_tables"
-        then
-            echo "ERROR: Table in relationship does not have existing model"
-            exit
-        fi
-    fi
-
-    # Check if all the rels are valid (m2m, o2o, m2o)
-    for rel in $(jq -r ' .relationships[] | .type ' $CONFIG_NAME | sort | uniq)
-    do
-        if [[ $rel != 'm2m' ]] && [[ $rel != 'm2o' ]] && [[ $rel != 'o2o' ]]
-        then
-            echo "ERROR: Unknown relations ship. Only allow m2m, m2o, and o2o"
-            echo "$rel"
-            exit
-        fi
-    done
-
-    # Check if there are repeated rels
-    dup_rel=$(jq -r ' .relationships[] | [.table_1, .table_2, .type] | join(",")' $CONFIG_NAME | uniq -d)
-    if [[ ! -z $dup_rel ]]
-    then
-        echo "ERROR: Duplicate relations detected"
-        echo "$dup_rel"
-        exit
-    fi
 }
