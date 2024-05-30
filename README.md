@@ -203,7 +203,7 @@ Afterwards you can access the generated documentation on the following webpage: 
 
 ## Testing
 
-Unit test will automatically generate. However, **test data must be provided** in the `test/unit/test_data.py` file. Test data should reflect the what is to be expected to be used in production.
+Unit test will automatically generate. However, **test data must be provided** in the `test/unit/test_data.py` file. Test data should reflect the what is to be expected to be used in production. 3 should be sufficient.
 
 #### Set up
 

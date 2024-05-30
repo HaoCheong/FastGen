@@ -1,39 +1,48 @@
-# Generate Unit Tests
+# Generate Unit Tests template
 function generate_unit_tests() {
     echo "======== GENERATE UNIT TESTS ========"
 
-    # Generate Conf Test
-    ## Generate base for conf
+    # Generate Conf Test, configuration file containing pytest fixtures
     proj_data=$(jq -r ' .project | [.name, .desc, .version, .database_name] | join("|")' $CONFIG_NAME)
     database_name=$(echo "$proj_data" | cut -d"|" -f4)
 
     echo "> Generate Conftest Base"
+
+    # Generates the initial conf file base template
     file_name="./$PROJECT_NAME/tests/unit/conftest.py"
     conftest_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<CONFTEST_BASE>>" -A50 | tail -50)
     filled_conftest_template=$(echo "$conftest_template" | sed -r "s/\{\{ DATABASE_NAME \}\}/$database_name/g")
     echo "$filled_conftest_template" > $TEMP_TXT
 
+    # Iterate over each model to generate fixture per model
     for unit in $(jq -r '.tables[] | .name ' $CONFIG_NAME)
     do
         echo ">> Generate Conftest Line for $unit"
 
+        # Process text required for file naming convention 
         unit_cc=$(echo "$unit" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
         
+        # Generates the fixture per model 
         fixture_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<TEST_FIXTURE>>" -A5 | tail -5)
         filled_fixture_template=$(echo "$fixture_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$unit_cc/g")
         pop_file=$(awk -v var="$filled_fixture_template" '{gsub(/{{ TEST_DATA_FIXTURE }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
+
     done
+
+    # Cleans template and writes to main file
     clean_template $TEMP_TXT
     cp $TEMP_TXT $file_name
 
-    # Generate Wrappers
-    ## Generate base for wrapper
+    # Generate Wrappers file, containing API wrappers
     echo "> Generate Wrapper Base"
+
+    # Generates the initial wrapper file base template
     file_name="./$PROJECT_NAME/tests/unit/wrappers.py"
     wrapper_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<WRAPPER_BASE>>" -A19 | tail -19)
     echo "$wrapper_template" > $TEMP_TXT
 
+    # Iterate over each model to generate fixture per model
     for unit in $(jq -r '.tables[] | .name ' $CONFIG_NAME)
     do
         echo ">> Generate Wrappers for $unit"
@@ -78,28 +87,33 @@ function generate_unit_tests() {
         
     done
 
+    # Cleans template and writes to main file
     clean_template $TEMP_TXT
     cp $TEMP_TXT $file_name
 
-    # Generate Test Data
-    ## Generate Test Data Base
     echo "> Generate Test Data Base"
+
+    # Generate Test Data base template, data has to created by users afterwards
     file_name="./$PROJECT_NAME/tests/unit/test_data.py"
     test_data_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<TEST_DATA_BASE>>" -A3 | tail -3)
     echo "$test_data_template" > $TEMP_TXT
 
+    # Iterate over each model to generate test data function per model
     for unit in $(jq -r '.tables[] | .name ' $CONFIG_NAME)
     do
         echo ">> Generate Test Data for $unit"
 
+        # Process text required for file naming convention 
         unit_cc=$(echo "$unit" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
         
+        # Generates the test data template function
         test_data_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<TEST_DATA_FUNC>>" -A6 | tail -6)
         filled_test_data_template=$(echo "$test_data_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$unit_cc/g")
         pop_file=$(awk -v var="$filled_test_data_template" '{gsub(/{{ TEST_DATA_FUNCS }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
     done
 
+    # Cleans template and writes to main file
     clean_template $TEMP_TXT
     cp $TEMP_TXT $file_name
 
@@ -162,6 +176,7 @@ function generate_unit_tests() {
         pop_file=$(awk -v var="$filled_invalid_update_unit_test_template" '{gsub(/{{ UNIT_TESTS }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
 
+        # Cleans template and writes to main file
         clean_template $TEMP_TXT
         cp $TEMP_TXT $file_name
 
