@@ -3,6 +3,15 @@
 FastGen acts as an automatic boilerplate generator to create basic CRUD apps given a configuration file. 
 Idea is to reduce the unneccessary time spent required scaffolding application while avoiding typically human error pitfall.
 
+This will generate the bare necessities and produce a functioning CRUD app. However, several key features of a production ready webapp are not present and should be adjusted accordingly. Features such as:
+
+- Security features (Authenticated + Authorised access to endpoints)
+- Unique business logic functions
+- Enforcement of constraints necessary to various more complex database
+- Reverse Proxy
+- Using any other enterprise database management system (PostgreSQL, MySQL, SQL Server, etc.)
+	- *SQLAlchemy does provide several configurable options for different DBMS.*
+
 ## Notable Files and Directories
 
 ### `generators/`
