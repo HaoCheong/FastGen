@@ -80,4 +80,15 @@ function validate_rel() {
         echo "$dup_rel"
         exit
     fi
+
+    # Checks if an unsupported data type was included
+    for col_type in $(jq -r ' .tables[] | .columns[] | .column_type ' $CONFIG_NAME | sort | uniq)
+    do 
+        if [[ $col_type != 'str' ]] && [[ $col_type != 'int' ]] && [[ $col_type != 'datetime' ]] && [[ $col_type != 'json' ]]
+        then
+            echo "ERROR: Unsupported column type detected (str, int, datetime, json)"
+            echo "$col_type"
+            exit
+        fi
+    done
 }
