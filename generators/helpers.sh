@@ -55,9 +55,6 @@ function validate_rel() {
     do
         max_count=$(jq -r ' .tables[] | select(.name == "'$table'") |  .columns[] | .column_name ' $CONFIG_NAME | sort | uniq -c | cut -d" " -f7 | sort | uniq)
         max_count_line=$(echo "$max_count" | wc -l)
-        echo $table
-        echo "MAX $max_count"
-        echo "MAX COUNT LINE $max_count_line"
         if [[ $max_count_line -gt 1 ]] || [[ $max_count -gt 1 ]]; then
             echo "Duplicate column name in table $table"
             exit
