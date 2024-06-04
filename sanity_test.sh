@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [[ $# -ne 3 ]]; then
+    echo "USAGE" ./sanity_check.sh \<PROJECT_NAME\> \<CONFIG_NAME\> \<SAMPLE_DATA\>"
+fi
+
 PROJECT_NAME=$1
 CONFIG_NAME=$2
 TEST_FILE=$3
