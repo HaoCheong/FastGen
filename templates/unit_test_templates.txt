@@ -7,7 +7,6 @@ from fastapi.testclient import TestClient
 import pytest
 from app.helpers import get_db
 from app.main import app
-import tests.unit.test_data as td
 
 import pathlib
  
@@ -48,19 +47,8 @@ def reset_db():
     yield
     Base.metadata.drop_all(bind=engine)
 
-{{ TEST_DATA_FIXTURE }}
-
-
-<<TEST_FIXTURE>>
-@pytest.fixture
-def {{ SELF_CLASS_CC }}_data():
-    return td.{{ SELF_CLASS_CC }}_data()
-
-{{ TEST_DATA_FIXTURE }}
-
-
 <<WRAPPER_BASE>>
-from unit.conftest import client, SUCCESS
+from unit.client_fixture import client, SUCCESS, reset_db
 import json
 
 def unpack(function):
@@ -132,8 +120,9 @@ def update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}_id,
 
 
 <<UNIT_TEST_BASE>>
-from unit.conftest import client, SUCCESS, ERROR
+from unit.client_fixture import client, SUCCESS, ERROR, reset_db
 from unit import wrappers
+from unit.data_fixture import *
 
 {{ UNIT_TESTS }}
 
@@ -286,10 +275,12 @@ def test_invalid_update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, 
 
 <<TEST_DATA_BASE>>
 # PLEASE FILL OUT THE TEST DATA REQUIRED, 3 per data for all tests to work
+import pytest
 
 {{ TEST_DATA_FUNCS }}
 
 <<TEST_DATA_FUNC>>
+@pytest.fixture
 def {{ SELF_CLASS_CC }}_data():
     return [
         # TO BE FILLED

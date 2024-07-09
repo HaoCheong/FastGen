@@ -9,8 +9,8 @@ function generate_unit_tests() {
     echo "> Generate Conftest Base"
 
     # Generates the initial conf file base template
-    file_name="./$PROJECT_NAME/tests/unit/conftest.py"
-    conftest_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<CONFTEST_BASE>>" -A50 | tail -50)
+    file_name="./$PROJECT_NAME/tests/unit/client_fixture.py"
+    conftest_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<CONFTEST_BASE>>" -A48 | tail -48)
     filled_conftest_template=$(echo "$conftest_template" | sed -r "s/\{\{ DATABASE_NAME \}\}/$database_name/g")
     echo "$filled_conftest_template" > $TEMP_TXT
 
@@ -91,23 +91,23 @@ function generate_unit_tests() {
     clean_template $TEMP_TXT
     cp $TEMP_TXT $file_name
 
-    echo "> Generate Test Data Base"
+    echo "> Generate Data Fixture Base"
 
     # Generate Test Data base template, data has to created by users afterwards
-    file_name="./$PROJECT_NAME/tests/unit/test_data.py"
-    test_data_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<TEST_DATA_BASE>>" -A3 | tail -3)
+    file_name="./$PROJECT_NAME/tests/unit/data_fixture.py"
+    test_data_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<TEST_DATA_BASE>>" -A4 | tail -4)
     echo "$test_data_template" > $TEMP_TXT
 
     # Iterate over each model to generate test data function per model
     for unit in $(jq -r '.tables[] | .name ' $CONFIG_NAME)
     do
-        echo ">> Generate Test Data for $unit"
+        echo ">> Generate Data Fixture for $unit"
 
         # Process text required for file naming convention 
         unit_cc=$(echo "$unit" | sed -r "s/([a-z])([A-Z])/\1_\L\2/g; s/([A-Z])([A-Z])([a-z])/\L\1\L\2_\3/g" | tr '[:upper:]' '[:lower:]')
         
         # Generates the test data template function
-        test_data_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<TEST_DATA_FUNC>>" -A6 | tail -6)
+        test_data_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<TEST_DATA_FUNC>>" -A7 | tail -7)
         filled_test_data_template=$(echo "$test_data_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$unit_cc/g")
         pop_file=$(awk -v var="$filled_test_data_template" '{gsub(/{{ TEST_DATA_FUNCS }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
@@ -125,7 +125,7 @@ function generate_unit_tests() {
         
         # Create the Base File
         file_name=./$PROJECT_NAME/tests/unit/"$unit_cc"_tests.py
-        unit_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<UNIT_TEST_BASE>>" -A4 | tail -4)
+        unit_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<UNIT_TEST_BASE>>" -A5 | tail -5)
         echo "$unit_template" > $TEMP_TXT
 
         # Create the CREATE Unit Tests

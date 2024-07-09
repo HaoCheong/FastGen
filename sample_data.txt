@@ -1,5 +1,8 @@
 # PLEASE FILL OUT THE TEST DATA REQUIRED, 3 per data for all tests to work
+import pytest
 
+
+@pytest.fixture
 def pet_data():
     return [
         {
@@ -21,6 +24,7 @@ def pet_data():
     ]
 
 
+@pytest.fixture
 def owner_data():
     return [
         {
@@ -38,6 +42,7 @@ def owner_data():
     ]
 
 
+@pytest.fixture
 def trainer_data():
     return [
         {
@@ -59,6 +64,7 @@ def trainer_data():
     ]
 
 
+@pytest.fixture
 def nutrition_plan_data():
     return [
         {
