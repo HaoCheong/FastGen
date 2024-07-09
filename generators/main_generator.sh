@@ -42,7 +42,7 @@ function generate_main_files() {
 
         metadata_assign_tag_template=$(cat ./templates/metadata_templates.txt | grep -e "<<METADATA_ASSIGN_TAG>>" -A6 | tail -6)
         filled_metadata_assign_tag_template=$(echo "$metadata_assign_tag_template" | sed -r "s/\{\{ SELF_CLASS_STD \}\}/$metadata_assign/g")
-        filled_metadata_assign_tag_template=$(echo "$metadata_assign_tag_template" | sed -r "s/\{\{ METADATA_TITLE \}\}/$meta_title/g")
+        filled_metadata_assign_tag_template=$(echo "$filled_metadata_assign_tag_template" | sed -r "s/\{\{ METADATA_TITLE \}\}/$meta_title/g")
         filled_metadata_assign_tag_template=$(echo "$filled_metadata_assign_tag_template" | sed 's/\\n/\\\\n/g')
         pop_file=$(awk -v var="$filled_metadata_assign_tag_template" '{gsub(/{{ METADATA_ASSIGN_TAGS }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT

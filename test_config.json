@@ -63,10 +63,6 @@
 					"column_type": "str"
 				},
 				{
-					"column_name": "name",
-					"column_type": "str"
-				},
-				{
 					"column_name": "trainer_id",
 					"column_type": "str"
 				},

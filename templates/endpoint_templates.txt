@@ -81,7 +81,7 @@ import app.cruds.{{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign as {{ SELF_CLAS
 {{ ENDPOINT_ASSIGN_INSERT }}
 
 <<ENDPOINT_ASSIGN_m2m>>
-@router.post("/api/v1/assignTo{{ OTHER_CLASS_STD }}/{{{ SELF_CLASS_CC }}_id}/{{{ OTHER_CLASS_CC }}_id}", tags=["{{ META_TABLE_NAME }} Assignments"])
+@router.post("/api/v1/assignTo{{ OTHER_CLASS_STD }}/{{{ OTHER_CLASS_CC }}_id}/{{{ SELF_CLASS_CC }}_id}", tags=["{{ META_TABLE_NAME }} Assignments"])
 def assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}({{ SELF_CLASS_CC }}_id: int, {{ OTHER_CLASS_CC }}_id: str, db: Session = Depends(get_db)):
     db_{{ OTHER_CLASS_CC }} = {{ OTHER_CLASS_CC }}_cruds.get_{{ OTHER_CLASS_CC }}_by_id(db, id={{ OTHER_CLASS_CC }}_id)
     db_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}_cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
@@ -98,7 +98,7 @@ def assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}({{ SELF_CLASS_CC }}_id: i
 
     return {{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign.assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}(db, {{ SELF_CLASS_CC }}_id={{ SELF_CLASS_CC }}_id, {{ OTHER_CLASS_CC }}_id={{ OTHER_CLASS_CC }}_id)
 
-@router.post("/api/v1/unassignFrom{{ OTHER_CLASS_STD }}/{{{ SELF_CLASS_CC }}_id}/{{{ OTHER_CLASS_CC }}_id}", tags=["{{ META_TABLE_NAME }} Assignments"])
+@router.post("/api/v1/unassignFrom{{ OTHER_CLASS_STD }}/{{{ OTHER_CLASS_CC }}_id}/{{{ SELF_CLASS_CC }}_id}", tags=["{{ META_TABLE_NAME }} Assignments"])
 def unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}({{ SELF_CLASS_CC }}_id: int, {{ OTHER_CLASS_CC }}_id: str, db: Session = Depends(get_db)):
     db_{{ OTHER_CLASS_CC }} = {{ OTHER_CLASS_CC }}_cruds.get_{{ OTHER_CLASS_CC }}_by_id(db, id={{ OTHER_CLASS_CC }}_id)
     db_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}_cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
@@ -116,7 +116,7 @@ def unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}({{ SELF_CLASS_CC }}_i
     return {{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign.unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}(db, {{ SELF_CLASS_CC }}_id={{ SELF_CLASS_CC }}_id, {{ OTHER_CLASS_CC }}_id={{ OTHER_CLASS_CC }}_id)
 
 <<ENDPOINT_ASSIGN_m2o>>
-@router.post("/api/v1/assignTo{{ OTHER_CLASS_STD }}/{{{ SELF_CLASS_CC }}_id}/{{{ OTHER_CLASS_CC }}_id}", tags=["{{ META_TABLE_NAME }} Assignments"])
+@router.post("/api/v1/assignTo{{ OTHER_CLASS_STD }}/{{{ OTHER_CLASS_CC }}_id}/{{{ SELF_CLASS_CC }}_id}", tags=["{{ META_TABLE_NAME }} Assignments"])
 def assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}({{ SELF_CLASS_CC }}_id: int, {{ OTHER_CLASS_CC }}_id: int, db: Session = Depends(get_db)):
     db_{{ OTHER_CLASS_CC }} = {{ OTHER_CLASS_CC }}_cruds.get_{{ OTHER_CLASS_CC }}_by_id(db, id={{ OTHER_CLASS_CC }}_id)
     db_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}_cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
@@ -133,7 +133,7 @@ def assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}({{ SELF_CLASS_CC }}_id: i
 
     return {{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign.assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}(db, {{ SELF_CLASS_CC }}_id={{ SELF_CLASS_CC }}_id, {{ OTHER_CLASS_CC }}_id={{ OTHER_CLASS_CC }}_id)
 
-@router.post("/api/v1/unassignFrom{{ OTHER_CLASS_STD }}/{{{ SELF_CLASS_CC }}_id}/{{{ OTHER_CLASS_CC }}_id}", tags=["{{ META_TABLE_NAME }} Assignments"])
+@router.post("/api/v1/unassignFrom{{ OTHER_CLASS_STD }}/{{{ OTHER_CLASS_CC }}_id}/{{{ SELF_CLASS_CC }}_id}", tags=["{{ META_TABLE_NAME }} Assignments"])
 def unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}({{ SELF_CLASS_CC }}_id: int, {{ OTHER_CLASS_CC }}_id: int, db: Session = Depends(get_db)):
     db_{{ OTHER_CLASS_CC }} = {{ OTHER_CLASS_CC }}_cruds.get_{{ OTHER_CLASS_CC }}_by_id(db, id={{ OTHER_CLASS_CC }}_id)
     db_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}_cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
@@ -151,7 +151,7 @@ def unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}({{ SELF_CLASS_CC }}_i
     return {{ SELF_CLASS_CC }}_{{ OTHER_CLASS_CC }}_assign.unassign_{{ SELF_CLASS_CC }}_from_{{ OTHER_CLASS_CC }}(db, {{ SELF_CLASS_CC }}_id={{ SELF_CLASS_CC }}_id, {{ OTHER_CLASS_CC }}_id={{ OTHER_CLASS_CC }}_id)
 
 <<ENDPOINT_ASSIGN_o2o>>
-@router.post("/api/v1/assignTo{{ OTHER_CLASS_STD }}/{{{ SELF_CLASS_CC }}_id}/{{{ OTHER_CLASS_CC }}_id}", tags=["{{ META_TABLE_NAME }} Assignments"])
+@router.post("/api/v1/assignTo{{ OTHER_CLASS_STD }}/{{{ OTHER_CLASS_CC }}_id}/{{{ SELF_CLASS_CC }}_id}", tags=["{{ META_TABLE_NAME }} Assignments"])
 def assign_{{ SELF_CLASS_CC }}_to_{{ OTHER_CLASS_CC }}({{ SELF_CLASS_CC }}_id: int, {{ OTHER_CLASS_CC }}_id: int, db: Session = Depends(get_db)):
     db_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}_cruds.get_{{ SELF_CLASS_CC }}_by_id(db, id={{ SELF_CLASS_CC }}_id)
     db_{{ OTHER_CLASS_CC }} = {{ OTHER_CLASS_CC }}_cruds.get_{{ OTHER_CLASS_CC }}_by_id(db, id={{ OTHER_CLASS_CC }}_id)
