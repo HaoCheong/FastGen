@@ -165,17 +165,25 @@ def test_get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLA
         if ret_{{ SELF_CLASS_CC }}[key] != value:
             assert False, f'Return instance does not match with expected data'
 
-    assert True
+    ret_{{ SELF_CLASS_CC }} = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'] + 200)
+    assert ret_{{ SELF_CLASS_CC }}['status'] == ERROR, f'Invalid ID did not return expected error status'
 
 {{ UNIT_TESTS }}
 
 
-<<INVALID_GET_BY_ID_UNIT_TEST>>
-def test_invalid_get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}_data):
-    ''' Testing the failing case of getting specified {{ SELF_CLASS_CC }} '''
+<<VALID_UPDATE_BY_ID_UNIT_TEST>>
+def test_update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id(reset_db, {{ SELF_CLASS_CC }}_data):
     {{ SELF_CLASS_CC }} = wrappers.create_{{ SELF_CLASS_CC }}({{ SELF_CLASS_CC }}_data[0])['data']
-    ret_{{ SELF_CLASS_CC }} = wrappers.get_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'] + 200)
-    assert ret_{{ SELF_CLASS_CC }}['status'] == ERROR, f'Invalid ID did not return expected error status'
+    new_{{ SELF_CLASS_CC }} = {{ SELF_CLASS_CC }}_data[1]
+
+    # Updates the values
+    db_new_{{ SELF_CLASS_CC }} = wrappers.update_{{ SELF_CLASS_CC }}_by_{{ SELF_CLASS_CC }}_id({{ SELF_CLASS_CC }}['id'], new_{{ SELF_CLASS_CC }})
+    assert db_new_{{ SELF_CLASS_CC }}['status'] != ERROR
+
+    # For every key value in {{ SELF_CLASS_CC }}, ret {{ SELF_CLASS_CC }} shares the same value
+    for key, value in new_{{ SELF_CLASS_CC }}.items():
+        if db_new_{{ SELF_CLASS_CC }}['data'][key] != value:
+            assert False, f'Return instance does not match with expected data'
 
 {{ UNIT_TESTS }}
 

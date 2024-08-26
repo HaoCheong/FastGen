@@ -141,16 +141,22 @@ function generate_unit_tests() {
         echo "$pop_file" > $TEMP_TXT
 
         # Create the VALID GET BY ID Unit Tests
-        valid_get_by_id_unit_test_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<VALID_GET_BY_ID_UNIT_TEST>>" -A13 | tail -13)
+        valid_get_by_id_unit_test_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<VALID_GET_BY_ID_UNIT_TEST>>" -A14 | tail -14)
         filled_valid_get_by_id_unit_test_template=$(echo "$valid_get_by_id_unit_test_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$unit_cc/g")
         pop_file=$(awk -v var="$filled_valid_get_by_id_unit_test_template" '{gsub(/{{ UNIT_TESTS }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
 
-        # Create the INVALID GET BY ID Unit Tests
-        invalid_get_by_id_unit_test_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<INVALID_GET_BY_ID_UNIT_TEST>>" -A7 | tail -7)
-        filled_invalid_get_by_id_unit_test_template=$(echo "$invalid_get_by_id_unit_test_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$unit_cc/g")
-        pop_file=$(awk -v var="$filled_invalid_get_by_id_unit_test_template" '{gsub(/{{ UNIT_TESTS }}/, var); print}' $TEMP_TXT)
+        # Create the VALID UPDATE BY ID Unit Tests
+        valid_update_by_id_unit_test_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<VALID_UPDATE_BY_ID_UNIT_TEST>>" -A15 | tail -15)
+        filled_valid_update_by_id_unit_test_template=$(echo "$valid_update_by_id_unit_test_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$unit_cc/g")
+        pop_file=$(awk -v var="$filled_valid_update_by_id_unit_test_template" '{gsub(/{{ UNIT_TESTS }}/, var); print}' $TEMP_TXT)
         echo "$pop_file" > $TEMP_TXT
+
+        # # Create the INVALID GET BY ID Unit Tests
+        # invalid_get_by_id_unit_test_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<INVALID_GET_BY_ID_UNIT_TEST>>" -A7 | tail -7)
+        # filled_invalid_get_by_id_unit_test_template=$(echo "$invalid_get_by_id_unit_test_template" | sed -r "s/\{\{ SELF_CLASS_CC \}\}/$unit_cc/g")
+        # pop_file=$(awk -v var="$filled_invalid_get_by_id_unit_test_template" '{gsub(/{{ UNIT_TESTS }}/, var); print}' $TEMP_TXT)
+        # echo "$pop_file" > $TEMP_TXT
 
         # Create the VALID DELETE Unit Tests
         valid_delete_unit_test_template=$(cat ./templates/unit_test_templates.txt | grep -e "<<VALID_DELETE_UNIT_TEST>>" -A7 | tail -7)
