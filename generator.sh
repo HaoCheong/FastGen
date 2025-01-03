@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Importing Generator Functions
-source generators/base_generator.sh
-source generators/model_generator.sh
-source generators/schema_generator.sh
-source generators/crud_generator.sh
-source generators/endpoint_generator.sh
-source generators/main_generator.sh
-source generators/test_generator.sh
 source generators/helpers.sh
+source generators/base_generators.sh
+# source generators/model_generators.sh
+# source generators/crud_generators.sh
+# source generators/endpoint_generators.sh
+# source generators/main_generators.sh
+# source generators/test_generators.sh
+
 
 # Master project variables
 CONFIG_NAME=""
@@ -50,36 +50,13 @@ while getopts "$OPTIONS" opt; do
 done
 shift "$((OPTIND-1))"
 
-# ======== DATA VALIDATION ========
-validate_rel
+function main {
+    # ========== VALIDATE INPUTS ==========
+    validate_input
 
-# ======== BASE GENERATORS ========
-generate_base_directories
-generate_base_files
+    # ========== GENERATE BASE FILES ==========
+    generate_base_directories
+    generate_base_files
+}
 
-# ======== CORE GENERATORS ========
-generate_models
-generate_schemas
-generate_cruds
-generate_endpoints
-
-# ======== MAIN GENERATORS ========
-generate_main_files
-
-# ======== TEST GENERATORS ========
-generate_unit_tests
-
-# ======== CLEAN UP ========
-echo "======== CLEANING UP ========"
-rm $TEMP_TXT
-
-echo "======== COMPLETE ========"
-echo " - Please include 3 pieces of testing data in test/unit/test_data.py for each model"
-
-
-# ======== Standardise Naming scheme (dev ref) ========
-# - SELF... - Relates to the current class in question
-# - OTHER... - Relates to the other, related class in question
-# - ..._CLASS_CC - Camel Case version of the class name (nutrition_plan, pet)
-# - ..._CLASS_STD - Standard version of the class name (NutritionPlan, Pet)
-# - ..._TABLE_NAME - relates to the explicit name of the table (table_name = "xyz")
+main

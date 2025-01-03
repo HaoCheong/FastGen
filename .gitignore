@@ -181,3 +181,4 @@ project/
 test_proj/
 prestart_*
 test_*.txt
+*.json
