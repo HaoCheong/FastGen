@@ -1,0 +1,119 @@
+{
+	"project": {
+		"name": "Airsig SMS Web Application",
+		"desc": "Full web application for Airsig SMS's web application",
+		"version": "0.0.1",
+		"database_name": "airsig_sms"
+	},
+	"tables": [
+		{
+			"name": "Branch",
+			"tablename": "branch",
+			"metadata": {
+				"name": "Branch",
+				"desc": "Operations with Enabled Branches"
+			},
+			"columns": [
+				{
+					"column_name": "branch_id",
+					"column_type": "int"
+				},
+				{
+					"column_name": "branch_name",
+					"column_type": "str"
+				},
+				{
+					"column_name": "sms_api_user",
+					"column_type": "str"
+				},
+				{
+					"column_name": "sms_api_key",
+					"column_type": "str"
+				},
+				{
+					"column_name": "override_number",
+					"column_type": "str"
+				},
+				{
+					"column_name": "enabled",
+					"column_type": "int"
+				},
+				{
+					"column_name": "arrival_window_opt_in",
+					"column_type": "int"
+				},
+				{
+					"column_name": "time_frame_lower",
+					"column_type": "int"
+				},
+				{
+					"column_name": "time_frame_upper",
+					"column_type": "int"
+				},
+				{
+					"column_name": "additional_settings",
+					"column_type": "json"
+				},
+				{
+					"column_name": "created_at",
+					"column_type": "datetime"
+				},
+				{
+					"column_name": "updated_at",
+					"column_type": "datetime"
+				}
+			]
+		},
+		{
+			"name": "Log",
+			"tablename": "logs",
+			"metadata": {
+				"name": "Log",
+				"desc": "Operations to logging management"
+			},
+			"columns": [
+				{
+					"column_name": "description",
+					"column_type": "str"
+				},
+				{
+					"column_name": "status",
+					"column_type": "int"
+				},
+				{
+					"column_name": "created_at",
+					"column_type": "datetime"
+				},
+				{
+					"column_name": "updated_at",
+					"column_type": "datetime"
+				}
+			]
+		},
+		{
+			"name": "Setting",
+			"tablename": "settings",
+			"metadata": {
+				"name": "Setting",
+				"desc": "Meta settings for the entire application"
+			},
+			"columns": [
+				{
+					"column_name": "setting_option",
+					"column_type": "str"
+				},
+				{
+					"column_name": "setting_value",
+					"column_type": "str"
+				}
+			]
+		}
+	],
+	"relationships": [
+		{
+			"table_1": "Log",
+			"table_2": "Branch",
+			"type": "m2o"
+		}
+	]
+}
